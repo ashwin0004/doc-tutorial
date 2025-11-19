@@ -50,6 +50,7 @@ const FontFamilyButton = () => {
             <DropdownMenuContent className="p-1 flex flex-col gap-y-1">
                 {fonts.map(({ label, value }) => (
                     <button
+                    onClick={() => editor?.chain().focus().setFontFamily(value).run()}
                     key={value}
                     className={cn(
                         "flex items-center gap-x-2 px-2 py-1 rounded-sm hover:bg-neutral-200/80",
@@ -57,6 +58,7 @@ const FontFamilyButton = () => {
                     )}
                     style={{fontFamily: value }}
                     >
+                        <span className="text-sm">{label}</span>
 
                     </button>
                 ))}
@@ -174,7 +176,7 @@ export const Toolbar = () => {
                     {...item} />
                 ))}
                <Separator orientation="vertical" className="h-6 bg-neutral-300" />
-               {/* TODO:Font Family */}
+               <FontFamilyButton />
                <Separator orientation="vertical" className="h-6 bg-neutral-300" />
                {/* TODO: Heading */}
                <Separator orientation="vertical" className="h-6 bg-neutral-300" />
