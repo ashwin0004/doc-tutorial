@@ -5,6 +5,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import Table from '@tiptap/extension-table'
 import Image from '@tiptap/extension-image'
+import TextAlign from '@tiptap/extension-text-align'
 import Link from '@tiptap/extension-link'
 import {Color} from '@tiptap/extension-color'
 import Highlight from"@tiptap/extension-highlight"
@@ -18,6 +19,8 @@ import TableHeader from '@tiptap/extension-table-header'
 import { useEditorStore } from '@/store/use-editor-store';
 
 import StarterKit from '@tiptap/starter-kit'
+
+import { FontSizeExtension } from '@/extensions/font-size';
 
 export const Editor = () => {
   const { setEditor } = useEditorStore();
@@ -55,6 +58,11 @@ export const Editor = () => {
     },
     extensions: [
       StarterKit,
+      TextStyle,
+      FontSizeExtension,
+      TextAlign.configure({
+        types: ["heading", "paragraph"]
+        }),
       Link.configure({
         openOnClick: false,
         autolink: true,
@@ -64,7 +72,7 @@ export const Editor = () => {
       Highlight.configure({
         multicolor: true,
       }),
-      TextStyle,
+      
       FontFamily,
       Underline,
       Image,
