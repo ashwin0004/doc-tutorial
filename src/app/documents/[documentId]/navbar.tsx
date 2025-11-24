@@ -20,7 +20,8 @@ import {
 
 import { useEditorStore } from "@/store/use-editor-store";
 import { DocumentInput } from "./document-input";
-import { blob } from "stream/consumers";
+
+import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 
 
 
@@ -243,6 +244,15 @@ export const Navbar = () => {
                         </Menubar>
                     </div>
                 </div>
+            </div>
+            <div className="flex gap-3 items-center pl-6">
+                <OrganizationSwitcher 
+                afterCreateOrganizationUrl="/"
+                afterLeaveOrganizationUrl="/"
+                afterSelectOrganizationUrl="/"
+                afterSelectPersonalUrl="/"
+                />
+            <UserButton />
             </div>
         </nav>
     );
