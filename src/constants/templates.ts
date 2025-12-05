@@ -137,6 +137,7 @@ export const templates = [
       <li><strong>Development:</strong> <span class="placeholder">[timeframe]</span></li>
       <li><strong>Testing & Deployment:</strong> <span class="placeholder">[timeframe]</span></li>
       <li><strong>Support & Training:</strong> <span class="placeholder">[timeframe]</span></li>
+      
     </ul>
   </section>
 
