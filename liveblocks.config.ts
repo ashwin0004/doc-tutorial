@@ -1,3 +1,5 @@
+import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
+
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
 declare global {
@@ -14,6 +16,9 @@ declare global {
       // animals: LiveList<string>;
       leftMargin: number;
       rightMargin: number;
+      layers: LiveMap<string, LiveObject<Layer>>;
+      layerIds: LiveList<string>;
+      todos: LiveList<LiveObject<Todo>>;
     };
 
     // Custom user info set when authenticating with a secret key
@@ -29,9 +34,6 @@ declare global {
 
     // Custom events, for useBroadcastEvent, useEventListener
     RoomEvent: {};
-      // Example has two events, using a union
-      // | { type: "PLAY" } 
-      // | { type: "REACTION"; emoji: "🔥" };
 
     // Custom metadata set on threads, for useThreads, useCreateThread, etc.
     ThreadMetadata: {
@@ -49,4 +51,81 @@ declare global {
   }
 }
 
-export {};
+export type Color = {
+  r: number;
+  g: number;
+  b: number;
+};
+
+export type Camera = {
+  x: number;
+  y: number;
+};
+
+export enum LayerType {
+  Rectangle,
+  Ellipse,
+  Path,
+  Text,
+  Note,
+}
+
+export type RectangleLayer = {
+  type: LayerType.Rectangle;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  fill: Color;
+};
+
+export type EllipseLayer = {
+  type: LayerType.Ellipse;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  fill: Color;
+};
+
+export type PathLayer = {
+  type: LayerType.Path;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  fill: Color;
+  points: number[][];
+};
+
+export type TextLayer = {
+  type: LayerType.Text;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  fill: Color;
+  value?: string;
+};
+
+export type NoteLayer = {
+  type: LayerType.Note;
+  x: number;
+  y: number;
+  height: number;
+  width: number;
+  fill: Color;
+  value?: string;
+};
+
+export type Todo = {
+  text: string;
+  checked: boolean;
+};
+
+export type Layer =
+  | RectangleLayer
+  | EllipseLayer
+  | PathLayer
+  | TextLayer
+  | NoteLayer;
