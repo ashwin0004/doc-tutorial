@@ -26,7 +26,8 @@ import {
     Undo2Icon,
     Presentation,
     FileText,
-    CheckSquareIcon
+    CheckSquareIcon,
+    NetworkIcon
 } from "lucide-react";
 import { useMutation } from "convex/react";
 
@@ -55,8 +56,8 @@ import { api } from "../../../../convex/_generated/api";
 
 interface NavbarProps {
     data: Doc<"documents">;
-    activeView?: "document" | "whiteboard" | "todo";
-    setActiveView?: (view: "document" | "whiteboard" | "todo") => void;
+    activeView?: "document" | "whiteboard" | "todo" | "flowchart";
+    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart") => void;
 };
 
 export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
@@ -342,6 +343,15 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
                                 >
                                     <CheckSquareIcon className="size-4 mr-2" />
                                     Todo
+                                </Button>
+                                <Button
+                                    variant={activeView === "flowchart" ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setActiveView?.("flowchart")}
+                                    className={activeView === "flowchart" ? "bg-white shadow-sm" : ""}
+                                >
+                                    <NetworkIcon className="size-4 mr-2" />
+                                    Flow
                                 </Button>
                             </div>
                         );

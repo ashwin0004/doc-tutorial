@@ -10,6 +10,9 @@ import { Toolbar } from "./toolbar";
 import { Whiteboard } from "./whiteboard";
 import { TodoList } from "./todo-list";
 import { api } from "../../../../convex/_generated/api";
+import dynamic from "next/dynamic";
+
+const Flowchart = dynamic(() => import("./flowchart").then(mod => mod.Flowchart), { ssr: false });
 
 interface DocumentProps {
   preloadedDocument: Preloaded<typeof api.documents.getById>;
@@ -17,7 +20,7 @@ interface DocumentProps {
 
 export const Document = ({ preloadedDocument }: DocumentProps) => {
   const document = usePreloadedQuery(preloadedDocument);
-  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo">("document");
+  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart">("document");
 
   return (
     <Room>
@@ -40,6 +43,11 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
           {activeView === "todo" && (
             <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
               <TodoList />
+            </div>
+          )}
+          {activeView === "flowchart" && (
+            <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
+              <Flowchart />
             </div>
           )}
         </div>

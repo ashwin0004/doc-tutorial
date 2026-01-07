@@ -85,6 +85,8 @@ export function Room({ children }: { children: ReactNode }) {
           layers: new LiveMap([]),
           layerIds: new LiveList([]),
           todos: new LiveList([]),
+          nodes: new LiveList([]),
+          edges: new LiveList([]),
         }}
       >
         <ClientSideSuspense fallback={<FullscreenLoader label="Room loading..." />}>

@@ -19,6 +19,8 @@ declare global {
       layers: LiveMap<string, LiveObject<Layer>>;
       layerIds: LiveList<string>;
       todos: LiveList<LiveObject<Todo>>;
+      nodes: LiveList<any>;
+      edges: LiveList<any>;
     };
 
     // Custom user info set when authenticating with a secret key
