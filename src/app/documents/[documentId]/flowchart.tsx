@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     ReactFlow,
     Background,
@@ -18,11 +18,13 @@ import {
     NodeChange,
     EdgeChange,
     MarkerType,
+    getConnectedEdges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useClient, useRoom, useMutation, useStorage } from "@liveblocks/react/suspense";
-import { LiveList, LiveObject } from "@liveblocks/client";
+import { useMutation, useStorage, useHistory, useCanUndo, useCanRedo } from "@liveblocks/react/suspense";
+import { LiveList } from "@liveblocks/client";
 import { toPng } from "html-to-image";
+import { Undo2, Redo2, Trash2 } from "lucide-react";
 
 const DiamondNode = ({ data }: { data: { label: string } }) => {
     return (
@@ -52,14 +54,12 @@ const DiamondNode = ({ data }: { data: { label: string } }) => {
 };
 
 export const Flowchart = () => {
-    const client = useClient();
-    const room = useRoom();
 
     // Check if storage is initialized
     const storageNodes = useStorage((root) => root.nodes);
     const storageEdges = useStorage((root) => root.edges);
 
-    const initStorage = useMutation(({ storage }: { storage: LiveObject<any> | any }) => {
+    const initStorage = useMutation(({ storage }) => {
         const nodes = storage.get("nodes");
         const edges = storage.get("edges");
 
@@ -95,7 +95,21 @@ const FlowchartInner = () => {
     const nodes = useStorage((root) => root.nodes) as unknown as Node[];
     const edges = useStorage((root) => root.edges) as unknown as Edge[];
 
-    const { getNodes } = useReactFlow();
+    const { getNodes, getEdges } = useReactFlow();
+
+    const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
+    const [selectedEdgeIds, setSelectedEdgeIds] = useState<string[]>([]);
+
+    // Merge distributed state (Liveblocks) with local interaction state (Selection)
+    const finalNodes = useMemo(() => nodes.map(n => ({
+        ...n,
+        selected: selectedNodeIds.includes(n.id)
+    })), [nodes, selectedNodeIds]);
+
+    const finalEdges = useMemo(() => edges.map(e => ({
+        ...e,
+        selected: selectedEdgeIds.includes(e.id)
+    })), [edges, selectedEdgeIds]);
 
     // -- Mutations for Write Operations --
 
@@ -129,6 +143,14 @@ const FlowchartInner = () => {
                 updateNodePosition(change.id, change.position);
             } else if (change.type === 'remove') {
                 deleteNode(change.id);
+            } else if (change.type === 'select') {
+                setSelectedNodeIds(prev => {
+                    if (change.selected) {
+                        return prev.includes(change.id) ? prev : [...prev, change.id];
+                    } else {
+                        return prev.filter(id => id !== change.id);
+                    }
+                });
             }
         });
     }, [updateNodePosition, deleteNode]);
@@ -137,6 +159,14 @@ const FlowchartInner = () => {
         changes.forEach((change) => {
             if (change.type === 'remove') {
                 deleteEdge(change.id);
+            } else if (change.type === 'select') {
+                setSelectedEdgeIds(prev => {
+                    if (change.selected) {
+                        return prev.includes(change.id) ? prev : [...prev, change.id];
+                    } else {
+                        return prev.filter(id => id !== change.id);
+                    }
+                });
             }
         });
     }, [deleteEdge]);
@@ -174,7 +204,7 @@ const FlowchartInner = () => {
 
     const onAddNode = useCallback((type: 'rectangle' | 'circle' | 'diamond') => {
         const id = `node_${Date.now()}`;
-        let newNode: Node = {
+        const newNode: Node = {
             id,
             position: { x: Math.random() * 300, y: Math.random() * 300 },
             data: { label: type === 'diamond' ? 'Decision' : (type === 'circle' ? 'Start/End' : 'Process') },
@@ -215,6 +245,10 @@ const FlowchartInner = () => {
             updateNodeLabel(node.id, newLabel);
         }
     }, [updateNodeLabel]);
+
+    const history = useHistory();
+    const canUndo = useCanUndo();
+    const canRedo = useCanRedo();
 
     const onPrint = () => {
         const nodes = getNodes();
@@ -289,6 +323,50 @@ const FlowchartInner = () => {
                     <div className="w-4 h-4 border border-gray-500 bg-gray-100 rotate-45" />
                     Diamond
                 </button>
+                <div className="w-[1px] h-8 bg-gray-300 mx-1" />
+                <button
+                    className="bg-white p-2 rounded shadow-sm border text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                    onClick={() => history.undo()}
+                    disabled={!canUndo}
+                >
+                    <Undo2 className="w-4 h-4" />
+                </button>
+                <button
+                    className="bg-white p-2 rounded shadow-sm border text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                    onClick={() => history.redo()}
+                    disabled={!canRedo}
+                >
+                    <Redo2 className="w-4 h-4" />
+                </button>
+                <div className="w-[1px] h-8 bg-gray-300 mx-1" />
+                <button
+                    className="bg-white p-2 rounded shadow-sm border text-sm font-medium flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => {
+                        // Manual deletion logic because deleteElements was unreliable with controlled LiveList headers
+                        const nodesToDelete = selectedNodeIds;
+                        const edgesToDelete = new Set(selectedEdgeIds);
+
+                        // Find edges connected to nodes we are deleting
+                        const nodes = getNodes();
+                        const edges = getEdges();
+                        const deletingNodes = nodes.filter(n => nodesToDelete.includes(n.id));
+
+                        const connectedEdges = getConnectedEdges(deletingNodes, edges);
+                        connectedEdges.forEach(e => edgesToDelete.add(e.id));
+
+                        // Execute deletions
+                        nodesToDelete.forEach(id => deleteNode(id));
+                        Array.from(edgesToDelete).forEach(id => deleteEdge(id));
+
+                        // Clear selection to be safe (though removed nodes/edges should clear it)
+                        setSelectedNodeIds([]);
+                        setSelectedEdgeIds([]);
+                    }}
+                    title="Delete Selected (Backspace/Delete)"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
+                <div className="w-[1px] h-8 bg-gray-300 mx-1" />
                 <button
                     className="bg-white p-2 rounded shadow-sm border text-sm font-medium hover:bg-gray-50 flex items-center gap-1"
                     onClick={onPrint}
@@ -297,8 +375,8 @@ const FlowchartInner = () => {
                 </button>
             </div>
             <ReactFlow
-                nodes={nodes}
-                edges={edges}
+                nodes={finalNodes}
+                edges={finalEdges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}

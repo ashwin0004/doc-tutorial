@@ -2,10 +2,6 @@
 
 import { memo } from "react";
 
-interface SelectionBoxProps {
-    onResizeHandlePointerDown: (corner: number, initialBounds: any) => void;
-}
-
 const HANDLE_WIDTH = 8;
 
 export const SelectionBox = memo(({

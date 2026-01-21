@@ -72,7 +72,7 @@ export const createFlowchartStore = (client: Client) => {
                 setEdges: (edges: Edge[]) => set({ edges }),
             }),
             {
-                client: client as any,
+                client: client,
                 storageMapping: {
                     nodes: true,
                     edges: true,

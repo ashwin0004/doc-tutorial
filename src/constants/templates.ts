@@ -1,15 +1,15 @@
 export const templates = [
-    { 
-        id: "blank", 
-        label: "Blank Document", 
-        imageUrl: "/blank-document.svg",
-        initialContent: "",
-    },
-    {
-  id: "software-proposal",
-  label: "Software development proposal",
-  imageUrl: "/software-proposal.svg",
-  initialContent: `<!doctype html>
+  {
+    id: "blank",
+    label: "Blank Document",
+    imageUrl: "/blank-document.svg",
+    initialContent: "",
+  },
+  {
+    id: "software-proposal",
+    label: "Software development proposal",
+    imageUrl: "/software-proposal.svg",
+    initialContent: `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -193,13 +193,13 @@ export const templates = [
 
 </body>
 </html>`,
-},
+  },
 
-    { 
-        id: "project-proposal", 
-        label: "Project proposal", 
-        imageUrl: "/project-proposal.svg",
-        initialContent: `<!doctype html>
+  {
+    id: "project-proposal",
+    label: "Project proposal",
+    imageUrl: "/project-proposal.svg",
+    initialContent: `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -272,13 +272,13 @@ export const templates = [
 </body>
 </html>
 `,
-    },
+  },
 
-    { 
-        id: "business-letter", 
-        label: "Business letter", 
-        imageUrl: "/business-letter.svg",
-        initialContent: `<!doctype html>
+  {
+    id: "business-letter",
+    label: "Business letter",
+    imageUrl: "/business-letter.svg",
+    initialContent: `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -304,9 +304,9 @@ export const templates = [
 </body>
 </html>
 `,
-    },
+  },
 
-    {
+  {
     id: "resume",
     label: "Resume",
     imageUrl: "/resume.svg",
@@ -354,9 +354,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "cover-letter",
     label: "Cover letter",
     imageUrl: "/cover-letter.svg",
@@ -381,9 +381,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "letter",
     label: "Letter",
     imageUrl: "/letter.svg",
@@ -421,9 +421,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "report",
     label: "Report",
     imageUrl: "/Report.png",
@@ -461,9 +461,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "recipe",
     label: "Recipe",
     imageUrl: "/Recipe.png",
@@ -515,9 +515,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "brochure",
     label: "Brochure",
     imageUrl: "/Brochure.png",
@@ -567,9 +567,9 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "class-note",
     label: "Class-note",
     imageUrl: "/Class-note.png",
@@ -618,5 +618,11 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  },
+  {
+    id: "spreadsheet",
+    label: "Spreadsheet",
+    imageUrl: "/spreadsheet.svg",
+    initialContent: "",
+  }
 ];

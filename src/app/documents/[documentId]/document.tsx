@@ -13,6 +13,7 @@ import { api } from "../../../../convex/_generated/api";
 import dynamic from "next/dynamic";
 
 const Flowchart = dynamic(() => import("./flowchart").then(mod => mod.Flowchart), { ssr: false });
+const SpreadsheetComponent = dynamic(() => import("./spreadsheet").then(mod => mod.SpreadsheetComponent), { ssr: false });
 
 interface DocumentProps {
   preloadedDocument: Preloaded<typeof api.documents.getById>;
@@ -20,7 +21,7 @@ interface DocumentProps {
 
 export const Document = ({ preloadedDocument }: DocumentProps) => {
   const document = usePreloadedQuery(preloadedDocument);
-  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart">("document");
+  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet">(document.type === "spreadsheet" ? "spreadsheet" : "document");
 
   return (
     <Room>
@@ -48,6 +49,11 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
           {activeView === "flowchart" && (
             <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
               <Flowchart />
+            </div>
+          )}
+          {activeView === "spreadsheet" && (
+            <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
+              <SpreadsheetComponent />
             </div>
           )}
         </div>

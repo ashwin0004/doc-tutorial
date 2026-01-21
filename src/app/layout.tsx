@@ -30,8 +30,8 @@ export default function RootLayout({
         <NuqsAdapter>
           <ConvexClientProvider>
             <Toaster />
-        {children}
-        </ConvexClientProvider>
+            {children}
+          </ConvexClientProvider>
         </NuqsAdapter>
       </body>
     </html>

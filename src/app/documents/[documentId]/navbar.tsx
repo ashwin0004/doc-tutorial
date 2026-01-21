@@ -27,7 +27,8 @@ import {
     Presentation,
     FileText,
     CheckSquareIcon,
-    NetworkIcon
+    NetworkIcon,
+    TableIcon
 } from "lucide-react";
 import { useMutation } from "convex/react";
 
@@ -56,8 +57,8 @@ import { api } from "../../../../convex/_generated/api";
 
 interface NavbarProps {
     data: Doc<"documents">;
-    activeView?: "document" | "whiteboard" | "todo" | "flowchart";
-    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart") => void;
+    activeView?: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet";
+    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet") => void;
 };
 
 export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
@@ -352,6 +353,15 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
                                 >
                                     <NetworkIcon className="size-4 mr-2" />
                                     Flow
+                                </Button>
+                                <Button
+                                    variant={activeView === "spreadsheet" ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setActiveView?.("spreadsheet")}
+                                    className={activeView === "spreadsheet" ? "bg-white shadow-sm" : ""}
+                                >
+                                    <TableIcon className="size-4 mr-2" />
+                                    Sheet
                                 </Button>
                             </div>
                         );

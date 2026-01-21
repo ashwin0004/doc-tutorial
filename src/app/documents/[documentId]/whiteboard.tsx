@@ -54,33 +54,10 @@ export const Whiteboard = () => {
         }));
     };
 
-    const insertLayer = useMutation((
-        { storage, setMyPresence },
-        layerType: LayerType.Rectangle | LayerType.Ellipse,
-        position: { x: number; y: number }
-    ) => {
-        const liveLayers = storage.get("layers");
-        const liveLayerIds = storage.get("layerIds");
-        if (!liveLayers || !liveLayerIds) return; // Should be init
 
-        const layerId = nanoid();
-        const layer = new LiveObject({
-            type: layerType,
-            x: position.x,
-            y: position.y,
-            height: 100,
-            width: 100,
-            fill: { r: 217, g: 217, b: 217 },
-        } as Layer);
-
-        liveLayerIds.push(layerId);
-        liveLayers.set(layerId, layer);
-
-        setCanvasState({ mode: CanvasMode.None });
-    }, [canvasState.mode]); // Removed layerType from deps as it's passed
 
     const onLayerPointerDown = useMutation((
-        { self, setMyPresence },
+        { },
         e: React.PointerEvent,
         layerId: string
     ) => {
@@ -130,7 +107,7 @@ export const Whiteboard = () => {
     }, [history, layers, selectedLayerId]);
 
     const onPointerDown = useMutation((
-        { storage, setMyPresence },
+        { storage },
         e: React.PointerEvent
     ) => {
         const point = {
@@ -255,15 +232,13 @@ export const Whiteboard = () => {
     }, [canvasState, currentPath, camera, selectedLayerId]);
 
     const onPointerLeave = useMutation((
-        { setMyPresence },
-        e: React.PointerEvent
+        { setMyPresence }
     ) => {
         setMyPresence({ cursor: null });
     }, []);
 
     const onPointerUp = useMutation((
-        { storage, setMyPresence },
-        e: React.PointerEvent
+        { storage }
     ) => {
         history.resume();
         if (canvasState.mode === CanvasMode.Resizing || canvasState.mode === CanvasMode.Translating) {
@@ -351,9 +326,7 @@ export const Whiteboard = () => {
 
                         const isSelected = selectedLayerId === layerId;
 
-                        const onLayerClick = (e: React.MouseEvent) => {
-                            // Handled in onLayerPointerDown
-                        };
+
 
                         if (layer.type === LayerType.Rectangle) {
                             return (

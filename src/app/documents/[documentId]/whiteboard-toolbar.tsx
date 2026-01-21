@@ -3,14 +3,11 @@ import {
     Pencil,
     Square,
     Circle,
-    Type,
-    StickyNote,
     Undo2,
     Redo2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 
 export enum CanvasMode {
     None,

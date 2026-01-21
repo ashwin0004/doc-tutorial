@@ -6,7 +6,7 @@ import {
   RoomProvider,
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
-import { LiveMap, LiveList, LiveObject } from "@liveblocks/client";
+import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 
@@ -15,6 +15,7 @@ import { RIGHT_MARGIN_DEFAULT, LEFT_MARGIN_DEFAULT } from "@/constants/margins";
 
 import { getUsers, getDocuments } from "./actions";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { Layer, Todo } from "../../../../liveblocks.config";
 
 type User = { id: string; name: string; avatar: string; color: string; };
 
@@ -79,14 +80,22 @@ export function Room({ children }: { children: ReactNode }) {
     >
       <RoomProvider
         id={params.documentId as string}
+        initialPresence={{ cursor: null }}
         initialStorage={{
           leftMargin: LEFT_MARGIN_DEFAULT,
           rightMargin: RIGHT_MARGIN_DEFAULT,
-          layers: new LiveMap([]),
-          layerIds: new LiveList([]),
-          todos: new LiveList([]),
-          nodes: new LiveList([]),
-          edges: new LiveList([]),
+          layers: new LiveMap<string, LiveObject<Layer>>([]),
+          layerIds: new LiveList<string>([]),
+          todos: new LiveList<LiveObject<Todo>>([]),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          nodes: new LiveList<any>([]),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          edges: new LiveList<any>([]),
+          spreadsheet: new LiveList([]),
+          columnSizes: new LiveMap<string, number>([]),
+          rowSizes: new LiveMap<string, number>([]),
+          rowHeaderWidth: 40,
+          columnHeaderHeight: 32,
         }}
       >
         <ClientSideSuspense fallback={<FullscreenLoader label="Room loading..." />}>
