@@ -10,29 +10,29 @@ const liveblocks = new Liveblocks({
 });
 // new (chat gpt)
 type ClerkOrgClaims = {
-  o?: {
-    id?: string;
-    rol?: string;
-    slg?: string;
-  };
+    o?: {
+        id?: string;
+        rol?: string;
+        slg?: string;
+    };
 };
 
 export async function POST(req: Request) {
     const { sessionClaims } = await auth();
     if (!sessionClaims) {
-        return new Response("Unauthorized", { status: 401});
+        return new Response("Unauthorized", { status: 401 });
     }
-// new
+    // new
     const claims = sessionClaims as ClerkOrgClaims;
 
 
     const user = await currentUser();
     if (!user) {
-        return new Response("Unauthorized", { status: 401});
+        return new Response("Unauthorized", { status: 401 });
     }
 
     const { room } = await req.json();
-    const document = await convex.query(api.documents.getById, { id: room});
+    const document = await convex.query(api.documents.getById, { id: room });
 
     if (!document) {
         return new Response("Unauthorized", { status: 401 });
@@ -40,13 +40,26 @@ export async function POST(req: Request) {
 
     const isOwner = document.ownerId === user.id;
     const isOrganizationMember =
-  !!(document.organizationId && document.organizationId === claims.o?.id);
+        !!(document.organizationId && document.organizationId === claims.o?.id);
 
 
 
     if (!isOwner && !isOrganizationMember) {
+        console.log("Authorization failed", {
+            isOwner,
+            isOrganizationMember,
+            documentOwnerId: document.ownerId,
+            userId: user.id,
+            documentOrgId: document.organizationId,
+            userOrgId: claims.o?.id
+        });
         return new Response("Unauthorized", { status: 401 });
     }
+
+    console.log("Authorization success", {
+        userId: user.id,
+        room
+    });
 
     const name = user.fullName ?? user.primaryEmailAddress?.emailAddress ?? "Anonymous";
     const nameToNumber = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);

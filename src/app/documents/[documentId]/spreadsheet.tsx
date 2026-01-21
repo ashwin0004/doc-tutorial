@@ -1,11 +1,11 @@
 "use client";
 
 import Spreadsheet from "react-spreadsheet";
-import { useMutation, useStorage } from "@liveblocks/react/suspense";
+import { useMutation, useStorage, useHistory, useCanUndo, useCanRedo } from "@liveblocks/react/suspense";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import { useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, MoreHorizontal, Trash, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, GripVertical } from "lucide-react";
+import { PlusIcon, MoreHorizontal, Trash, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, GripVertical, Undo2, Redo2 } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -495,6 +495,10 @@ export const SpreadsheetComponent = () => {
     const storageData = useStorage((root) => root.spreadsheet);
     const { addRow, addColumn } = useSpreadsheetActions();
 
+    const history = useHistory();
+    const canUndo = useCanUndo();
+    const canRedo = useCanRedo();
+
     const initStorage = useMutation(({ storage }) => {
         if (!storage.get("spreadsheet")) {
             const initialData = new LiveList(
@@ -565,6 +569,27 @@ export const SpreadsheetComponent = () => {
                 <Button onClick={addColumn} size="sm" variant="outline">
                     <PlusIcon className="size-4 mr-2" />
                     Add Column
+                </Button>
+                <div className="w-[1px] h-6 bg-gray-300 mx-1" />
+                <Button
+                    onClick={() => history.undo()}
+                    disabled={!canUndo}
+                    size="sm"
+                    variant="outline"
+                    title="Undo"
+                >
+                    <Undo2 className="size-4 mr-2" />
+                    Undo
+                </Button>
+                <Button
+                    onClick={() => history.redo()}
+                    disabled={!canRedo}
+                    size="sm"
+                    variant="outline"
+                    title="Redo"
+                >
+                    <Redo2 className="size-4 mr-2" />
+                    Redo
                 </Button>
             </div>
             <div className="flex-1 overflow-auto p-4">

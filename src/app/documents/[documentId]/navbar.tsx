@@ -31,6 +31,7 @@ import {
     TableIcon
 } from "lucide-react";
 import { useMutation } from "convex/react";
+import { useStorage } from "@liveblocks/react/suspense";
 
 import { RenameDialog } from "@/components/rename-dialog";
 import { RemoveDialog } from "@/components/remove-dialog";
@@ -66,6 +67,10 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
     const { editor } = useEditorStore();
     const mutation = useMutation(api.documents.create);
 
+    const todos = useStorage((root) => root.todos);
+    const spreadsheet = useStorage((root) => root.spreadsheet);
+    const nodes = useStorage((root) => root.nodes);
+
     const onNewDocument = () => {
         mutation({
             title: "Untitled document",
@@ -91,7 +96,11 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
         const a = document.createElement("a");
         a.href = url;
         a.download = filename;
+        a.style.display = "none";
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     const onSaveJSON = () => {
@@ -115,13 +124,44 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
     };
 
     const onSaveText = () => {
-        if (!editor) return;
+        let content = "";
 
-        const content = editor.getText();
+        if (activeView === "document") {
+            if (!editor) {
+                toast.error("Editor not ready");
+                return;
+            }
+            content = editor.getText();
+        } else if (activeView === "todo") {
+            if (!todos) return;
+            content = "TO-DO LIST\n==========\n\n";
+            todos.forEach((todo) => {
+                content += `[${todo.checked ? "x" : " "}] ${todo.text}\n`;
+            });
+        } else if (activeView === "spreadsheet") {
+            if (!spreadsheet) return;
+            spreadsheet.forEach((row) => {
+                const rowText = row.map((cell) => cell.value).join("\t");
+                content += rowText + "\n";
+            });
+        } else if (activeView === "flowchart") {
+            if (!nodes) return;
+            content = "FLOWCHART NODES\n===============\n\n";
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            nodes.forEach((node: any) => {
+                content += `- ${node.data?.label || "Node"}\n`;
+            });
+        }
+
+        if (!content) {
+            toast.error("No content to save");
+            return;
+        }
+
         const blob = new Blob([content], {
             type: "text/plain",
         });
-        onDownload(blob, `${data.title}.txt`)
+        onDownload(blob, `${data.title}.txt`);
     };
 
     return (

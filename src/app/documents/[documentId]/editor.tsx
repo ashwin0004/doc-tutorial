@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useEditor, EditorContent } from '@tiptap/react'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
@@ -41,6 +42,41 @@ export const Editor = ({ initialContent }: EditorProps) => {
   });
   const { setEditor } = useEditorStore();
 
+  const extensions = useMemo(() => [
+    liveblocks,
+    StarterKit.configure({
+      history: false,
+    }),
+    LineHeightExtension,
+    TextStyle,
+    FontSizeExtension,
+    TextAlign.configure({
+      types: ["heading", "paragraph"]
+    }),
+    Link.configure({
+      openOnClick: false,
+      autolink: true,
+      defaultProtocol: "https"
+    }),
+    Color,
+    Highlight.configure({
+      multicolor: true,
+    }),
+
+    FontFamily,
+    Underline,
+    Image,
+    ImageResize,
+    Table,
+    TableRow,
+    TableHeader,
+    TableCell,
+    TaskItem.configure({
+      nested: true,
+    }),
+    TaskList
+  ], [liveblocks]);
+
   const editor = useEditor({
     immediatelyRender: false,
     onCreate({ editor }) {
@@ -74,40 +110,7 @@ export const Editor = ({ initialContent }: EditorProps) => {
         class: "focus:outline-none print:border-0 bg-white border border-[#C7C7C7] flex flex-col min-h-[1054px] w-[816px] pt-10 pr-14 pb-10 cursor-text"
       },
     },
-    extensions: [
-      liveblocks,
-      StarterKit.configure({
-        history: false,
-      }),
-      LineHeightExtension,
-      TextStyle,
-      FontSizeExtension,
-      TextAlign.configure({
-        types: ["heading", "paragraph"]
-      }),
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        defaultProtocol: "https"
-      }),
-      Color,
-      Highlight.configure({
-        multicolor: true,
-      }),
-
-      FontFamily,
-      Underline,
-      Image,
-      ImageResize,
-      Table,
-      TableRow,
-      TableHeader,
-      TableCell,
-      TaskItem.configure({
-        nested: true,
-      }),
-      TaskList
-    ],
+    extensions,
   })
 
   return (

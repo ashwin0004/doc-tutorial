@@ -7,7 +7,7 @@ import {
   ClientSideSuspense,
 } from "@liveblocks/react/suspense";
 import { LiveList, LiveMap, LiveObject } from "@liveblocks/client";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 
 import { FullscreenLoader } from "@/components/fullscreen-loader";
@@ -40,43 +40,51 @@ export function Room({ children }: { children: ReactNode }) {
     fetchUsers();
   }, [fetchUsers]);
 
+  const authEndpoint = useCallback(async () => {
+    const endpoint = "/api/liveblocks-auth";
+    const room = params.documentId as string;
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify({ room }),
+    });
+
+    return await response.json();
+  }, [params.documentId]);
+
+  const resolveUsers = useCallback(({ userIds }: { userIds: string[] }) => {
+    return userIds.map(
+      (userId) => users.find((user) => user.id === userId) ?? undefined
+    )
+  }, [users]);
+
+  const resolveMentionSuggestions = useCallback(({ text }: { text: string }) => {
+    let filteredUsers = users;
+
+    if (text) {
+      filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(text.toLowerCase())
+      );
+    }
+
+    return filteredUsers.map((user) => user.id);
+  }, [users]);
+
+  const resolveRoomsInfo = useCallback(async ({ roomIds }: { roomIds: string[] }) => {
+    const documents = await getDocuments(roomIds as Id<"documents">[]);
+    return documents.map((document) => ({
+      id: document.id,
+      name: document.name,
+    }));
+  }, []);
+
   return (
     <LiveblocksProvider
       throttle={16}
-      authEndpoint={async () => {
-        const endpoint = "/api/liveblocks-auth";
-        const room = params.documentId as string;
-
-        const response = await fetch(endpoint, {
-          method: "POST",
-          body: JSON.stringify({ room }),
-        });
-
-        return await response.json();
-      }}
-      resolveUsers={({ userIds }) => {
-        return userIds.map(
-          (userId) => users.find((user) => user.id === userId) ?? undefined
-        )
-      }}
-      resolveMentionSuggestions={({ text }) => {
-        let filteredUsers = users;
-
-        if (text) {
-          filteredUsers = users.filter((user) =>
-            user.name.toLowerCase().includes(text.toLowerCase())
-          );
-        }
-
-        return filteredUsers.map((user) => user.id);
-      }}
-      resolveRoomsInfo={async ({ roomIds }) => {
-        const documents = await getDocuments(roomIds as Id<"documents">[]);
-        return documents.map((document) => ({
-          id: document.id,
-          name: document.name,
-        }));
-      }}
+      authEndpoint={authEndpoint}
+      resolveUsers={resolveUsers}
+      resolveMentionSuggestions={resolveMentionSuggestions}
+      resolveRoomsInfo={resolveRoomsInfo}
     >
       <RoomProvider
         id={params.documentId as string}
