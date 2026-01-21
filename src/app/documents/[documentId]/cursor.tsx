@@ -7,9 +7,11 @@ import { connectionIdToColor } from "@/lib/utils";
 
 interface CursorProps {
     connectionId: number;
+    camera: { x: number; y: number };
+    zoom: number;
 }
 
-export const Cursor = memo(({ connectionId }: CursorProps) => {
+export const Cursor = memo(({ connectionId, camera, zoom }: CursorProps) => {
     const cursor = useOther(connectionId, (user) => user.presence.cursor);
     const info = useOther(connectionId, (user) => user.info);
 
@@ -24,7 +26,7 @@ export const Cursor = memo(({ connectionId }: CursorProps) => {
         <div
             className="pointer-events-none absolute top-0 left-0 drop-shadow-md z-50 transition-transform duration-75"
             style={{
-                transform: `translateX(${x}px) translateY(${y}px)`
+                transform: `translateX(${x * zoom + camera.x}px) translateY(${y * zoom + camera.y}px)`
             }}
         >
             <MousePointer2

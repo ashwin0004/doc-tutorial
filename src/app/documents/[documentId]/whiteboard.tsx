@@ -37,6 +37,7 @@ function getSvgPathFromStroke(stroke: number[][]) {
 export const Whiteboard = () => {
     const [canvasState, setCanvasState] = useState<CanvasState>({ mode: CanvasMode.None });
     const [camera, setCamera] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
     const layers = useStorage((root) => root.layers);
     const layerIds = useStorage((root) => root.layerIds);
 
@@ -67,8 +68,8 @@ export const Whiteboard = () => {
         e.stopPropagation();
 
         const point = {
-            x: e.nativeEvent.offsetX - camera.x,
-            y: e.nativeEvent.offsetY - camera.y
+            x: (e.nativeEvent.offsetX - camera.x) / zoom,
+            y: (e.nativeEvent.offsetY - camera.y) / zoom
         };
 
         if (selectedLayerId !== layerId) {
@@ -111,8 +112,8 @@ export const Whiteboard = () => {
         e: React.PointerEvent
     ) => {
         const point = {
-            x: e.nativeEvent.offsetX - camera.x,
-            y: e.nativeEvent.offsetY - camera.y
+            x: (e.nativeEvent.offsetX - camera.x) / zoom,
+            y: (e.nativeEvent.offsetY - camera.y) / zoom
         };
 
         if (canvasState.mode === CanvasMode.Inserting) {
@@ -163,8 +164,8 @@ export const Whiteboard = () => {
     ) => {
         e.preventDefault();
         const current = {
-            x: e.nativeEvent.offsetX - camera.x,
-            y: e.nativeEvent.offsetY - camera.y
+            x: (e.nativeEvent.offsetX - camera.x) / zoom,
+            y: (e.nativeEvent.offsetY - camera.y) / zoom
         };
         setMyPresence({ cursor: current });
 
@@ -310,14 +311,16 @@ export const Whiteboard = () => {
                 redo={history.redo}
                 canUndo={canUndo}
                 canRedo={canRedo}
+                zoom={zoom}
+                setZoom={setZoom}
             />
-            <CursorsPresence />
+            <CursorsPresence camera={camera} zoom={zoom} />
             <svg
                 className="h-full w-full"
             >
                 <g
                     style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px)`
+                        transform: `translate(${camera.x}px, ${camera.y}px) scale(${zoom})`
                     }}
                 >
                     {layerIds?.map((layerId) => {

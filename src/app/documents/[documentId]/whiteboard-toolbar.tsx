@@ -4,7 +4,10 @@ import {
     Square,
     Circle,
     Undo2,
-    Redo2
+    Redo2,
+    ZoomIn,
+    ZoomOut,
+    Maximize,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -56,6 +59,8 @@ interface WhiteboardToolbarProps {
     redo: () => void;
     canUndo: boolean;
     canRedo: boolean;
+    zoom: number;
+    setZoom: (zoom: number) => void;
 }
 
 export const WhiteboardToolbar = ({
@@ -65,6 +70,8 @@ export const WhiteboardToolbar = ({
     redo,
     canUndo,
     canRedo,
+    zoom,
+    setZoom,
 }: WhiteboardToolbarProps) => {
     return (
         <div className="absolute top-2 left-1/2 -translate-x-1/2 h-12 flex items-center shadow-sm p-1.5 bg-white rounded-md border gap-x-1 z-50">
@@ -117,6 +124,34 @@ export const WhiteboardToolbar = ({
                 size="icon"
             >
                 <Redo2 className="h-4 w-4" />
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <Button
+                onClick={() => setZoom(Math.max(0.1, zoom - 0.1))}
+                variant="ghost"
+                size="icon"
+                title="Zoom Out"
+            >
+                <ZoomOut className="h-4 w-4" />
+            </Button>
+            <div className="text-[10px] font-medium min-w-[32px] text-center">
+                {Math.round(zoom * 100)}%
+            </div>
+            <Button
+                onClick={() => setZoom(Math.min(5, zoom + 0.1))}
+                variant="ghost"
+                size="icon"
+                title="Zoom In"
+            >
+                <ZoomIn className="h-4 w-4" />
+            </Button>
+            <Button
+                onClick={() => setZoom(1)}
+                variant="ghost"
+                size="icon"
+                title="Reset Zoom"
+            >
+                <Maximize className="h-4 w-4" />
             </Button>
         </div>
     );

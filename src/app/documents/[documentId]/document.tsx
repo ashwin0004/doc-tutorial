@@ -52,7 +52,7 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
             </div>
           )}
           {activeView === "spreadsheet" && (
-            <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
+            <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)] print:relative print:top-0 print:h-auto print:block">
               <SpreadsheetComponent />
             </div>
           )}

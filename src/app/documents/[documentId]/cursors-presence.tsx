@@ -3,7 +3,12 @@
 import { useOthersConnectionIds } from "@liveblocks/react/suspense";
 import { Cursor } from "./cursor";
 
-export const CursorsPresence = () => {
+interface CursorsPresenceProps {
+    camera: { x: number; y: number };
+    zoom: number;
+}
+
+export const CursorsPresence = ({ camera, zoom }: CursorsPresenceProps) => {
 
     const ids = useOthersConnectionIds();
 
@@ -13,6 +18,8 @@ export const CursorsPresence = () => {
                 <Cursor
                     key={connectionId}
                     connectionId={connectionId}
+                    camera={camera}
+                    zoom={zoom}
                 />
             ))}
         </>

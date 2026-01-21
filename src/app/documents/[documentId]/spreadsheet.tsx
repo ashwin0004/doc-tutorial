@@ -560,8 +560,8 @@ export const SpreadsheetComponent = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col bg-white">
-            <div className="flex items-center gap-2 p-2 border-b bg-gray-50">
+        <div className="w-full h-full flex flex-col bg-white print:h-auto print:block">
+            <div className="flex items-center gap-2 p-2 border-b bg-gray-50 print:hidden">
                 <Button onClick={addRow} size="sm" variant="outline">
                     <PlusIcon className="size-4 mr-2" />
                     Add Row
@@ -592,7 +592,7 @@ export const SpreadsheetComponent = () => {
                     Redo
                 </Button>
             </div>
-            <div className="flex-1 overflow-auto p-4">
+            <div className="flex-1 overflow-auto p-4 print:overflow-visible print:h-auto print:p-0">
                 <Spreadsheet
                     data={data}
                     onChange={onChange}
