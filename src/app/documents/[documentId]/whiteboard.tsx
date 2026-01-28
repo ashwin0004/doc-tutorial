@@ -258,15 +258,25 @@ export const Whiteboard = () => {
                 storage.set("layerIds", liveLayerIds);
             }
 
+            // Compute bounding box for the drawn path and store points relative
+            const xs = currentPath.map((p) => p[0]);
+            const ys = currentPath.map((p) => p[1]);
+            const minX = Math.min(...xs);
+            const minY = Math.min(...ys);
+            const maxX = Math.max(...xs);
+            const maxY = Math.max(...ys);
+
+            const relPoints = currentPath.map(([x, y]) => [x - minX, y - minY]);
+
             const layerId = nanoid();
             const layer = new LiveObject<PathLayer>({
                 type: LayerType.Path,
-                x: 0,
-                y: 0,
-                height: 0,
-                width: 0,
+                x: minX,
+                y: minY,
+                height: maxY - minY,
+                width: maxX - minX,
                 fill: { r: 0, g: 0, b: 0 },
-                points: currentPath,
+                points: relPoints,
             });
 
             liveLayerIds.push(layerId);
@@ -295,6 +305,8 @@ export const Whiteboard = () => {
             layer.update({ fill });
         }
     }, [selectedLayerId]);
+
+    const selectedLayer = selectedLayerId ? layers?.get(selectedLayerId) : null;
 
     return (
         <div className="h-full w-full relative bg-[#F1F4F9] touch-none overflow-hidden"
@@ -363,16 +375,32 @@ export const Whiteboard = () => {
                         }
 
                         if (layer.type === LayerType.Path) {
-                            const stroke = getStroke(layer.points, {
+                            // Guard against malformed, single-point, or zero-size paths which can render a stray dot at 0,0
+                            if (!layer.points || !Array.isArray(layer.points)) {
+                                return null;
+                            }
+
+                            const pts = layer.points as number[][];
+                            if (pts.length < 2) return null;
+                            if (!Number.isFinite(layer.width) || !Number.isFinite(layer.height)) return null;
+                            // If the stored bounding box has no area, skip rendering the path
+                            if (layer.width <= 1 && layer.height <= 1) return null;
+                            const stroke = getStroke(pts, {
                                 size: 16,
                                 thinning: 0.5,
                                 smoothing: 0.5,
                                 streamline: 0.5,
                             });
                             const d = getSvgPathFromStroke(stroke);
+                            if (!d) return null;
+
+                            const tx = Number.isFinite(layer.x) ? layer.x : 0;
+                            const ty = Number.isFinite(layer.y) ? layer.y : 0;
+
                             return <path
                                 key={layerId}
                                 d={d}
+                                transform={`translate(${tx}, ${ty})`}
                                 fill={`rgb(${layer.fill.r}, ${layer.fill.g}, ${layer.fill.b})`}
                                 stroke={isSelected ? "#00f" : "transparent"}
                                 strokeWidth={isSelected ? 1 : 0}
@@ -395,15 +423,17 @@ export const Whiteboard = () => {
                         />
                     )}
 
-                    {selectedLayerId && layers && layers.get(selectedLayerId) && (
-                        <SelectionBox
-                            x={layers.get(selectedLayerId)!.x}
-                            y={layers.get(selectedLayerId)!.y}
-                            width={layers.get(selectedLayerId)!.width}
-                            height={layers.get(selectedLayerId)!.height}
-                            onResizeHandlePointerDown={onResizeHandlePointerDown}
-                        />
-                    )}
+                    {selectedLayer && selectedLayer.type !== LayerType.Path &&
+                        typeof selectedLayer.width === "number" && typeof selectedLayer.height === "number" &&
+                        selectedLayer.width > 0 && selectedLayer.height > 0 && (
+                            <SelectionBox
+                                x={selectedLayer.x}
+                                y={selectedLayer.y}
+                                width={selectedLayer.width}
+                                height={selectedLayer.height}
+                                onResizeHandlePointerDown={onResizeHandlePointerDown}
+                            />
+                        )}
                 </g>
             </svg>
 

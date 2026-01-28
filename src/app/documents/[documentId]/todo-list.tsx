@@ -1,9 +1,10 @@
 "use client";
 
+
 import { useMutation, useStorage } from "@liveblocks/react/suspense";
 import { LiveObject } from "@liveblocks/client";
 import { useState } from "react";
-import { Todo } from "../../../../liveblocks.config";
+// removed unused import Todo from liveblocks.config to satisfy ESLint
 import { TrashIcon } from "lucide-react";
 
 export const TodoList = () => {
