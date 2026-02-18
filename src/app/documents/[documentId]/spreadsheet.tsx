@@ -31,10 +31,13 @@ const getSize = (map: any, key: string, def: number) => {
 const useSpreadsheetActions = () => {
     const addRow = useMutation(({ storage }) => {
         const spreadsheet = storage.get("spreadsheet");
-        if (!spreadsheet || spreadsheet.length === 0) return;
+        if (!spreadsheet) return;
 
-        const firstRow = spreadsheet.get(0);
-        const colCount = firstRow ? firstRow.length : 5;
+        let colCount = 5;
+        if (spreadsheet.length > 0) {
+            const firstRow = spreadsheet.get(0);
+            colCount = firstRow ? firstRow.length : 5;
+        }
 
         const newRow = new LiveList(
             Array(colCount).fill(null).map(() => new LiveObject({ value: "" }))
@@ -46,6 +49,14 @@ const useSpreadsheetActions = () => {
         const spreadsheet = storage.get("spreadsheet");
         if (!spreadsheet) return;
 
+        if (spreadsheet.length === 0) {
+            const newRow = new LiveList([
+                new LiveObject({ value: "" })
+            ]);
+            spreadsheet.push(newRow);
+            return;
+        }
+
         spreadsheet.forEach((row) => {
             row.push(new LiveObject({ value: "" }));
         });
@@ -53,7 +64,15 @@ const useSpreadsheetActions = () => {
 
     const insertRow = useMutation(({ storage }, rowIndex: number) => {
         const spreadsheet = storage.get("spreadsheet");
-        if (!spreadsheet || spreadsheet.length === 0) return;
+        if (!spreadsheet) return;
+
+        if (spreadsheet.length === 0) {
+            const newRow = new LiveList(
+                Array(5).fill(null).map(() => new LiveObject({ value: "" }))
+            );
+            spreadsheet.push(newRow);
+            return;
+        }
 
         const firstRow = spreadsheet.get(0);
         const colCount = firstRow ? firstRow.length : 5;
@@ -79,6 +98,14 @@ const useSpreadsheetActions = () => {
     const insertColumn = useMutation(({ storage }, colIndex: number) => {
         const spreadsheet = storage.get("spreadsheet");
         if (!spreadsheet) return;
+
+        if (spreadsheet.length === 0) {
+            const newRow = new LiveList([
+                new LiveObject({ value: "" })
+            ]);
+            spreadsheet.push(newRow);
+            return;
+        }
 
         spreadsheet.forEach((row) => {
             row.insert(new LiveObject({ value: "" }), colIndex);
@@ -500,14 +527,22 @@ export const SpreadsheetComponent = () => {
     const canRedo = useCanRedo();
 
     const initStorage = useMutation(({ storage }) => {
-        if (!storage.get("spreadsheet")) {
-            const initialData = new LiveList(
+        // Granularly check and initialize each key
+        const spreadsheet = storage.get("spreadsheet");
+        if (!spreadsheet) {
+            storage.set("spreadsheet", new LiveList(
                 Array(5).fill(null).map(() =>
                     new LiveList(Array(5).fill(null).map(() => new LiveObject({ value: "" })))
                 )
-            );
-            storage.set("spreadsheet", initialData);
+            ));
+        } else if (spreadsheet.length === 0) {
+            for (let i = 0; i < 5; i++) {
+                spreadsheet.push(new LiveList(
+                    Array(5).fill(null).map(() => new LiveObject({ value: "" }))
+                ));
+            }
         }
+
         if (!storage.get("columnSizes")) {
             storage.set("columnSizes", new LiveMap());
         }
@@ -523,12 +558,21 @@ export const SpreadsheetComponent = () => {
     }, []);
 
     useEffect(() => {
-        if (storageData === undefined) {
+        const needsInit = !storageData ||
+            storageData.length === 0 ||
+            !storageData[0]; // If it exists but is malformed
+
+        if (needsInit) {
             initStorage();
         }
     }, [storageData, initStorage]);
 
-    const data = storageData ? storageData.map((row) => row.map((cell) => ({ value: cell.value }))) : [];
+    const data = storageData
+        ? storageData.map((row) => {
+            if (typeof row.map !== 'function') return [];
+            return row.map((cell) => ({ value: cell?.value || "" }));
+        })
+        : [];
 
     const onChange = useMutation(({ storage }, newData) => {
         const liveRows = storage.get("spreadsheet");

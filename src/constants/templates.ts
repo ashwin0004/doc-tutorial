@@ -1070,7 +1070,6 @@ export const templates = [
 
 </body>
 </html>
-
 `,
   },
 

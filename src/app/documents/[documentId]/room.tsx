@@ -99,7 +99,11 @@ export function Room({ children }: { children: ReactNode }) {
           nodes: new LiveList<any>([]),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           edges: new LiveList<any>([]),
-          spreadsheet: new LiveList([]),
+          spreadsheet: new LiveList(
+            Array(5).fill(null).map(() =>
+              new LiveList(Array(5).fill(null).map(() => new LiveObject({ value: "" })))
+            )
+          ),
           columnSizes: new LiveMap<string, number>([]),
           rowSizes: new LiveMap<string, number>([]),
           rowHeaderWidth: 40,
