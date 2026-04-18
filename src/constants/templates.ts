@@ -1,15 +1,15 @@
 export const templates = [
-    { 
-        id: "blank", 
-        label: "Blank Document", 
-        imageUrl: "/blank-document.svg",
-        initialContent: "",
-    },
-    {
-  id: "software-proposal",
-  label: "Software development proposal",
-  imageUrl: "/software-proposal.svg",
-  initialContent: `<!doctype html>
+  {
+    id: "blank",
+    label: "Blank Document",
+    imageUrl: "/blank-document.svg",
+    initialContent: "",
+  },
+  {
+    id: "software-proposal",
+    label: "Software development proposal",
+    imageUrl: "/software-proposal.svg",
+    initialContent: `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
@@ -193,383 +193,998 @@ export const templates = [
 
 </body>
 </html>`,
-},
+  },
 
-    { 
-        id: "project-proposal", 
-        label: "Project proposal", 
-        imageUrl: "/project-proposal.svg",
-        initialContent: `<!doctype html>
+  {
+    id: "project-proposal",
+    label: "Project proposal",
+    imageUrl: "/project-proposal.svg",
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Project Proposal</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.5; color:#333; padding: 28px; max-width: 900px; margin: auto; }
-    h1, h2, h3 { margin-top: 24px; }
-    h1.title { font-size: 32px; color:#554c3b; font-weight:700; margin-top: 40px; }
-    .date { margin-top: 8px; font-size: 14px; }
-    .contact { margin-top: 40px; }
-    .contact p { margin: 4px 0; }
-    .section { margin-top: 32px; }
-    ol { padding-left: 22px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Proposal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        .project-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .date {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .divider {
+            border-top: 2px solid #000;
+            width: 100px;
+            margin: 20px 0;
+        }
+        .contact-info {
+            margin-top: 20px;
+        }
+        h1 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            color: #2c3e50;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- HEADER + HERO SECTION -->
-  <h1 class="title">Project Name</h1>
-  <p class="date">09.04.20XX</p>
+    <div class="header">
+        <div class="project-name">Project Name</div>
+        <div class="date">09.04.20XX</div>
+        <div class="divider"></div>
+        <div class="contact-info">
+            <strong>Your Name</strong><br>
+            Your Company<br>
+            123 Your Street<br>
+            Your City, ST 12345
+        </div>
+    </div>
 
-  <div class="contact">
-    <p><strong>Your Name</strong></p>
-    <p>Your Company</p>
-    <p>123 Your Street</p>
-    <p>Your City, ST 12345</p>
-  </div>
+    <h1>Overview</h1>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. [cite_start]Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper. [cite: 1]</p>
 
-  <!-- PAGE 2 CONTENT -->
-  <div class="section">
-    <h2>1. Overview</h2>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet 
-      dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper.</p>
-  </div>
-
-  <div class="section">
-    <h2>Goals</h2>
+    <h1>Goals</h1>
     <ol>
-      <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit</li>
-      <li>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</li>
+        [cite_start]<li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit [cite: 1]</li>
+        [cite_start]<li>Sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. [cite: 1]</li>
     </ol>
-  </div>
 
-  <div class="section">
-    <h2>Specifications</h2>
-    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer 
-      possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes 
-      demonstraverunt lectores legere me lius quod ii legunt saepius.</p>
-  </div>
+    <h1>Specifications</h1>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. [cite_start]Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. [cite: 1]</p>
 
-  <div class="section">
     <h2>Lorem Ipsum</h2>
-    <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu 
-      feugiat nulla facilisis at vero eros et accumsan.</p>
-  </div>
+    [cite_start]<p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan. [cite: 1]</p>
 
-  <div class="section">
-    <h2>Milestones</h2>
-
-    <h3>I. Lorem ipsum</h3>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet 
-      dolore magna aliquam erat volutpat.</p>
-
-    <h3>II. Dolor sit amet</h3>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet 
-      dolore magna aliquam erat volutpat.</p>
-  </div>
+    <h1>Milestones</h1>
+    <ol>
+        <li>
+            <h2>Lorem ipsum</h2>
+            [cite_start]<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. [cite: 1]</p>
+        </li>
+        <li>
+            <h2>Dolor sit amet</h2>
+            [cite_start]<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. [cite: 1]</p>
+        </li>
+    </ol>
 
 </body>
 </html>
 `,
-    },
+  },
 
-    { 
-        id: "business-letter", 
-        label: "Business letter", 
-        imageUrl: "/business-letter.svg",
-        initialContent: `<!doctype html>
+  {
+    id: "business-letter",
+    label: "Business letter",
+    imageUrl: "/business-letter.svg",
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Business Letter</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:760px;margin:30px auto;padding:28px;color:#222;}
-  header{font-weight:700;color:#0b6374;}
-  .meta{margin-top:8px;color:#777;}
-  p{line-height:1.6;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Letter Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f; /* Approximating the red color often found in this template style */
+            margin-bottom: 5px;
+            margin-top: 0;
+        }
+        .sender-info {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .date {
+            margin-bottom: 20px;
+        }
+        .recipient-info {
+            margin-bottom: 20px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .signature {
+            margin-top: 40px;
+        }
+    </style>
 </head>
 <body>
-  <header>YOUR COMPANY</header>
-  <div class="meta">123 YOUR STREET • YOUR CITY, ST 12345 • (123) 456-7890 • NO_REPLY@EXAMPLE.COM</div>
 
-  <div style="margin-top:20px;">September 04, 20XX</div>
+    <div class="header">
+        <h1>Your Company</h1>
+        <div class="sender-info">
+            123 Your Street<br>
+            Your City, ST 12345<br>
+            (123) 456-7890<br>
+            no_reply@example.com
+        </div>
+    </div>
 
-  <p>Dear Ms. Reader,</p>
-  <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+    <div class="date">
+        September 04, 20XX
+    </div>
 
-  <p>Sincerely,<br/>YOUR NAME</p>
+    <div class="recipient-info">
+        Ms. Ronny Reader<br>
+        123 Address St<br>
+        Anytown, ST 12345
+    </div>
+
+    <div class="content">
+        <p>Dear Ms. Reader,</p><br>
+
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.</p>
+
+        <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.</p>
+    </div>
+
+    <div class="signature">
+        <p>Best regards,</p>
+        <p><strong>Your Name</strong><br>
+        CEO, Your Company</p>
+    </div>
+
 </body>
 </html>
 `,
-    },
+  },
 
-    {
+  {
     id: "resume",
     label: "Resume",
     imageUrl: "/resume.svg",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Resume — Your Name</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Maven+Pro:wght@700&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:900px;margin:28px auto;padding:32px;color:#222;}
-  .name{font-family:"Maven Pro",sans-serif;font-size:28px;color:#222;}
-  .contact{color:#666;margin-bottom:18px;}
-  h2{color:#222;margin-top:18px;}
-  .skills, .experience{margin-top:12px;}
-  .photo{float:right;margin-left:12px;}
-  .photo img{width:140px;border-radius:6px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .name {
+            font-size: 2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .contact-info {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 1.2em;
+            color: #2c3e50; /* Dark blue/grey often used in this style */
+            text-transform: uppercase;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            letter-spacing: 1px;
+        }
+        h2 {
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+        .date-location {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        ul {
+            margin-top: 5px;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <div class="name">Your Name</div>
-    <div class="contact">Creative Director • 123.456.7890 • no_reply@example.com</div>
-  </div>
 
-  <div class="photo"><img src="/resume-1.png" alt="photo"></div>
+    <div class="header">
+        <div class="name">Your Name</div>
+        <div class="contact-info">
+            123 Your Street, Your City, ST 12345<br>
+            (123) 456-7890 | no_reply@example.com
+        </div>
+    </div>
 
-  <section class="skills">
-    <h2>Skills</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ac interdum nisi.</p>
-  </section>
+    <h1>Skills</h1>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
 
-  <section class="experience">
-    <h2>Experience</h2>
-    <p><strong>Company Name / Job Title</strong><br/>MONTH 20XX - PRESENT, LOCATION<br/>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    <p><strong>Company Name / Job Title</strong><br/>MONTH 20XX - MONTH 20XX, LOCATION</p>
-  </section>
+    <h1>Experience</h1>
 
-  <section class="education">
-    <h2>Education</h2>
-    <p>School Name / Degree • MONTH 20XX - MONTH 20XX</p>
-  </section>
+    <h2>Company Name, Location — Job Title</h2>
+    <div class="date-location">Month 20XX - Present</div>
+    <ul>
+        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+        <li>Aenean ac interdum nisi. Sed in consequat mi.</li>
+        <li>Sed in consequat mi, sed pulvinar lacinia felis eu finibus.</li>
+    </ul>
 
-  <div style="clear:both;"></div>
+    <h2>Company Name, Location — Job Title</h2>
+    <div class="date-location">Month 20XX - Month 20XX</div>
+    <ul>
+        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+        <li>Aenean ac interdum nisi. Sed in consequat mi.</li>
+    </ul>
+
+    <h2>Company Name, Location — Job Title</h2>
+    <div class="date-location">Month 20XX - Month 20XX</div>
+    <ul>
+        <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+        <li>Aenean ac interdum nisi. Sed in consequat mi.</li>
+        <li>Sed pulvinar lacinia felis eu finibus.</li>
+    </ul>
+
+    <h1>Education</h1>
+
+    <h2>School Name, Location — Degree</h2>
+    <div class="date-location">Month 20XX - Month 20XX, Location</div>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore.</p>
+
+    <h1>Awards</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <p>Aenean ac interdum nisi.</p>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "cover-letter",
     label: "Cover letter",
     imageUrl: "/cover-letter.svg",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Informal Letter</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:700px;margin:30px auto;padding:32px;color:#222;background:#fff;}
-  .from{color:#1f6f7a;}
-  p{line-height:1.6;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter - Jamie Andrews</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #ffffff;
+        }
+        .header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .contact-info {
+            font-size: 14px;
+            color: #555;
+        }
+        .date {
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .recipient-section {
+            margin-bottom: 30px;
+        }
+        .recipient-name {
+            font-weight: bold;
+        }
+        .content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        .signature-section {
+            margin-top: 40px;
+        }
+        .signature {
+            font-family: 'Courier New', Courier, monospace; /* Simulating a typed signature or leave blank for wet signature */
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 30px;
+            color: #000;
+        }
+    </style>
 </head>
 <body>
-  <div class="from">Your Band<br/>September 04, 20XX</div>
-  <p>Hellofan,</p>
-  <p>First, a big thank you!</p>
-  <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-  <p>Lots of love,<br/>Your Name</p>
+
+    <div class="header">
+        <div class="name">Jamie Andrews</div>
+        <div class="contact-info">
+            1111 Main St.<br>
+            St. Louis, MO 63115<br>
+            314-111-1111<br>
+            jamiesneverwrong@yahoo.com
+        </div>
+    </div>
+
+    <div class="date">
+        November 5, 2014
+    </div>
+
+    <div class="recipient-section">
+        <div class="recipient-name">Hiring Manager</div>
+        Gold’s Gym<br>
+        Maryland Heights
+    </div>
+
+    <div class="content">
+        <p>Dear Hiring Manager,</p>
+
+        <p>I am writing today to apply for the position of Front Desk Associate at Gold’s Gym in Maryland Heights.</p>
+
+        <p>My previous experience a a sales clerk at IGA as well as my personal interest in your company makes me a ideal candidate for this position.</p>
+
+        <p>As a sales clerk, I was responsible for interacting with customers on a daily basis. I’m a punctual and dependable employee who always come to work with a smile. I prided myself on ensuring that every person who went through my aisle had a positive experience and many of them was repeat customers.</p>
+
+        <p>In that position, I learned many valuable skills. I was able to use the cash register effectively. In fact, I was repeatedly one of the most accurate cashier, receiving no warnings for inaccurate totals during my two years on the job. I also learn many new valuable computer skills when our store switched to a new cash register system ten months ago.</p>
+
+        <p>In addition, I am an avid weight lifter and would bring to this position my personal enthusiasm and expertise I would be able to inform Gold’s Gym customers of there options when it comes to personal fitness and help them make choices that will ensure they are satisfied with their experience.</p>
+
+        <p>I look forward to meeting with you too further discuss how my skills and expertises would match the needs of Gold’s Gym for this position. Thank you for your consideration.</p>
+    </div>
+
+    <div class="signature-section">
+        <p>Sincerely,</p>
+        <div class="signature">Jamie Andrews</div>
+    </div>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "letter",
     label: "Letter",
     imageUrl: "/letter.svg",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Formal Letter</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:720px;margin:30px auto;padding:28px;color:#222;}
-  .header p{margin:0;}
-  .date{margin-top:14px;margin-bottom:18px;color:#666;}
-  p{line-height:1.6;}
-  .signature{margin-top:28px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter – Jamie Andrews</title>
+
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            max-width: 820px;
+            margin: 50px auto;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #222;
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+        }
+
+        .name {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            text-align: right;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* DATE */
+        .date {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 35px;
+        }
+
+        /* RECIPIENT */
+        .recipient {
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .recipient strong {
+            display: block;
+            font-weight: 700;
+        }
+
+        /* CONTENT */
+        .content p {
+            margin-bottom: 16px;
+            text-align: justify;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* SIGNATURE */
+        .signature-section {
+            margin-top: 50px;
+        }
+
+        .signature-name {
+            margin-top: 35px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* PRINT FRIENDLY */
+        @media print {
+            body {
+                background: none;
+            }
+            .page {
+                margin: 0;
+                padding: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="header">
-    <p>Your Name</p>
-    <p>123 Your Street</p>
-    <p>Your City, ST 12345</p>
-    <p>(123) 456-7890 • no_reply@example.com</p>
-  </div>
-  <div class="date">4th September 20XX</div>
 
-  <p>Ronny Reader<br/>CEO, Company Name<br/>123 Address St<br/>Anytown, ST 12345</p>
+    <div class="page">
 
-  <p>Dear Ms. Reader,</p>
-  <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+        <!-- HEADER -->
+        <div class="header">
+            <div class="name">Jamie Andrews</div>
+            <div class="contact-info">
+                1111 Main St.<br>
+                St. Louis, MO 63115<br>
+                314-111-1111<br>
+                jamiesneverwrong@yahoo.com
+            </div>
+        </div>
 
-  <p class="signature">Sincerely,<br/>Your Name</p>
+        <!-- DATE -->
+        <div class="date">
+            November 5, 2014
+        </div>
 
-  <div style="margin-top:20px;"><img src="/letter-1.png" alt="letter decorative" style="max-width:220px;"></div>
+        <!-- RECIPIENT -->
+        <div class="recipient">
+            <strong>Hiring Manager</strong>
+            Gold’s Gym<br>
+            Maryland Heights
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <p>Dear Hiring Manager,</p><br>
+
+            <p>
+                I am writing to apply for the position of Front Desk Associate at Gold’s Gym in Maryland Heights.
+            </p><br>
+
+            <p>
+                My previous experience as a sales clerk at IGA, combined with my personal interest in your company, makes me an ideal candidate for this position.
+            </p>
+
+            <p>
+                As a sales clerk, I interacted with customers daily and developed strong communication and customer service skills. I am a punctual and dependable employee who consistently arrives with a positive attitude. I took pride in ensuring every customer had a positive experience, many of whom became repeat customers.
+            </p>
+
+            <p>
+                During my time at IGA, I gained valuable technical skills, including operating the cash register accurately and efficiently. I was repeatedly recognized as one of the most accurate cashiers, receiving no warnings for incorrect totals throughout my two years of employment. I also adapted quickly when the store transitioned to a new register system.
+            </p>
+
+            <p>
+                Additionally, I am an avid weight lifter and would bring genuine enthusiasm and fitness knowledge to this role. I would enjoy helping Gold’s Gym members understand their fitness options and ensuring they feel confident and satisfied with their experience.
+            </p>
+
+            <p>
+                I look forward to the opportunity to further discuss how my skills and experience align with the needs of Gold’s Gym. Thank you for your time and consideration.
+            </p>
+        </div>
+
+        <!-- SIGNATURE -->
+        <div class="signature-section">
+            <p>Sincerely,</p>
+            <div class="signature-name">Jamie Andrews</div>
+        </div>
+
+    </div>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "report",
     label: "Report",
     imageUrl: "/Report.png",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Report Title</title>
-<link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@700&family=Nunito:wght@400&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:900px;margin:30px auto;padding:28px;color:#222;}
-  .eyebrow{font-size:12px;color:#999;}
-  h1{font-family:"Maven Pro",sans-serif;font-size:42px;margin:6px 0;color:#222;}
-  .hero-image{margin-top:18px;}
-  .hero-image img{width:100%;height:auto;border-radius:4px;}
-  h2{margin-top:22px;}
-  p{line-height:1.6;color:#444;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .course-name {
+            font-size: 1.2em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+        .report-title {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-top: 40px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+    </style>
 </head>
 <body>
-  <div class="eyebrow">COURSE NAME</div>
-  <h1>REPORT TITLE<br/>LOREM IPSUM DOLOR SIT AMET</h1>
-  <div class="hero-image"><img src="/report-1.png" alt="Report image"></div>
 
-  <section>
-    <h2>Introduction</h2>
+    <div class="header">
+        <div class="course-name">COURSE NAME</div>
+        <div class="report-title">REPORT TITLE</div>
+        <div class="subtitle">LOREM IPSUM DOLOR SIT AMET</div>
+    </div>
+
+    <h1>Introduction</h1>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.</p>
+
+    <h2>Lorem ipsum</h2>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.</p>
+
     <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
-  </section>
 
-  <section>
-    <h2>Content</h2>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-    <img src="/report-2.jpeg" alt="decor" style="max-width:100%;margin-top:12px;border-radius:4px;">
-  </section>
+    <h3>Dolor sit amet</h3>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.</p>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "recipe",
     label: "Recipe",
     imageUrl: "/Recipe.png",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Strawberry Vanilla Pancakes</title>
-<link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@700&family=Nunito:wght@400&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; max-width:780px;margin:28px auto;padding:24px;color:#333;}
-  h1{font-family:"Maven Pro",sans-serif;color:#d9486f;font-size:36px;margin-bottom:6px;}
-  .meta{color:#777;font-weight:600;margin-bottom:16px;}
-  .layout{display:flex;gap:20px;align-items:flex-start;}
-  .layout img{width:260px;border-radius:6px;}
-  .col{flex:1}
-  ul{margin-left:18px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strawberry Vanilla Pancakes</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #222;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 50px;
+        }
+
+        /* LEFT COLUMN */
+        .label {
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #ff3b30;
+            margin-bottom: 25px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 360px;
+            background: #e6e6e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #333;
+        }
+
+        .meta strong {
+            font-weight: 700;
+        }
+
+        /* RIGHT COLUMN */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ff3b30;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        ol {
+            padding-left: 18px;
+            margin: 0;
+        }
+
+        ol li {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .tips {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .title {
+                font-size: 34px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Strawberry Vanilla Pancakes</h1>
-  <div class="meta">Ready in 20 minutes • Serves 8 • 280 calories</div>
 
-  <div class="layout">
-    <img src="/recipe-1.jpeg" alt="Pancakes">
-    <div class="col">
-      <h2>Ingredients</h2>
-      <ul>
-        <li>Lorem ipsum dolor sit amet</li>
-        <li>Consectetuer adipiscing elit</li>
-        <li>Suspendisse scelerisque</li>
-        <li>Libero interdum auctor</li>
-      </ul>
+<div class="page">
+    <div class="grid">
 
-      <h2>Preparation</h2>
-      <ol>
-        <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit sed do tempor incididunt ut labore et dolore magna aliqua.</li>
-        <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-        <li>Suspendisse scelerisque mi a mi.</li>
-        <li>Vestibulum ante ipsum primis elementum, libero interdum auctor cursus.</li>
-        <li>Phasellus vehicula nonummy nunc.</li>
-        <li>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-      </ol>
+        <!-- LEFT SIDE -->
+        <div>
+            <div class="label">Recipe</div>
+            <div class="title">
+                Strawberry<br>
+                Vanilla<br>
+                Pancakes
+            </div>
 
-      <h3>Tips</h3>
-      <p>Lorem ipsum dolor sit amet consectetuer adipiscing elit sed do tempor incididunt ut labore et dolore magna aliqua.</p>
+            <div class="image-placeholder">
+                Image Placeholder
+            </div>
+
+            <div class="meta">
+                Ready in <strong>20 minutes</strong><br>
+                Serves <strong>8 people</strong><br>
+                <strong>280 calories</strong>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div>
+
+            <div class="section">
+                <div class="section-title">Ingredients</div>
+                <ul>
+                    <li>Lorem ipsum dolor sit amet</li>
+                    <li>Consectetur adipiscing elit</li>
+                    <li>Suspendisse scelerisque</li>
+                    <li>Libero interdum auctor</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Preparation</div>
+                <ol>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do tempor incididunt ut labore et dolore magna aliqua.</li>
+                    <li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</li>
+                    <li><strong>Suspendisse scelerisque mi a mi</strong> lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+                    <li><strong>Vestibulum ante ipsum primis</strong> in faucibus orci luctus et ultrices posuere cubilia curae.</li>
+                    <li>Phasellus vehicula nonummy nunc. Lorem ipsum dolor sit amet.</li>
+                    <li>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Tips</div>
+                <div class="tips">
+                    Lorem ipsum dolor sit amet consectetur adipiscing elit sed do tempor incididunt ut labore et dolore magna aliqua.
+                </div>
+            </div>
+
+        </div>
+
     </div>
-  </div>
+</div>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "brochure",
     label: "Brochure",
     imageUrl: "/Brochure.png",
-    initialContent: `<!doctype html>
+    initialContent: `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<title>Product Brochure</title>
-<link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  body{font-family:"Nunito", Arial, sans-serif; color:#333; max-width:920px; margin:30px auto; padding:32px;}
-  .brand{font-family:"Maven Pro", sans-serif; color:#6b56d9; font-size:18px;}
-  h1{font-family:"Maven Pro", sans-serif; font-size:40px; color:#26388b; margin:8px 0;}
-  .date{color:#d0639b;}
-  .hero{display:flex; gap:28px; align-items:flex-start; margin-top:18px;}
-  .hero img{max-width:320px; border-radius:8px;}
-  h2{margin-top:22px;color:#222;}
-  p{line-height:1.6;color:#555;}
-  .accent{color:#d63d79;font-weight:700;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brochure Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        .header {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #e74c3c; /* Red accent often found in brochure templates */
+            padding-bottom: 20px;
+        }
+        .company-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .contact-info {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .title-section {
+            margin-bottom: 30px;
+        }
+        .main-title {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .date {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-top: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        h2 {
+            color: #e74c3c;
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        h3 {
+            color: #333;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+    </style>
 </head>
 <body>
-  <div class="brand">Your Company<br/><small>123 Your Street • Your City, ST 12345 • (123) 456 - 7890</small></div>
-  <h1>Product Brochure</h1>
-  <div class="date">September 04, 20XX</div>
 
-  <section class="hero">
-    <div style="flex:1">
-      <h2>Product Overview</h2>
-      <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      <p class="accent">Lorem ipsum</p>
-      <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.</p>
+    <div class="header">
+        <div class="company-name">Your Company</div>
+        <div class="contact-info">
+            123 Your Street<br>
+            Your City, ST 12345<br>
+            (123) 456 - 7890
+        </div>
+        <div class="title-section">
+            <h1 class="main-title">Product Brochure</h1>
+            <div class="date">September 04, 20XX</div>
+        </div>
     </div>
-    <div>
-      <img src="/brochure-1.png" alt="Product image">
-    </div>
-  </section>
 
-  <section>
-    <h2>Details</h2>
-    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.</p>
-    <img src="/brochure-2.jpeg" alt="decorative" style="max-width:100%;margin-top:12px;border-radius:6px;">
-    <p style="margin-top:12px;">Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.</p>
-  </section>
+    <h1>Product Overview</h1>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
 
-  <footer style="margin-top:28px;color:#666;font-size:14px;">Contact: your.email@example.com</footer>
+    <h2>Lorem ipsum</h2>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
+
+    <h3>Lorem ipsum</h3>
+    <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.</p>
+
+    <h2>Dolor sit</h2>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+
+    <h1>Details</h1>
+    <p>Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.</p>
+
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.</p>
+
 </body>
 </html>
 `,
-},
+  },
 
-    {
+  {
     id: "class-note",
     label: "Class-note",
     imageUrl: "/Class-note.png",
@@ -618,5 +1233,5 @@ export const templates = [
 </body>
 </html>
 `,
-},
+  }
 ];

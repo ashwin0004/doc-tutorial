@@ -1,9 +1,9 @@
 import { ConvexError, v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
 
-import { mutation,query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
-export const getByIds = query ({
+export const getByIds = query({
   args: { ids: v.array(v.id("documents")) },
   handler: async (ctx, { ids }) => {
     const documents = [];
@@ -23,7 +23,7 @@ export const getByIds = query ({
 });
 
 export const create = mutation({
-  args:{ title: v.optional(v.string()), initialContent: v.optional(v.string()) },
+  args: { title: v.optional(v.string()), initialContent: v.optional(v.string()), type: v.optional(v.string()) },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
 
@@ -31,15 +31,16 @@ export const create = mutation({
       throw new ConvexError("Unauthorized");
     }
 
-        const organizationId = (user.organization_id ?? undefined) as
-    | string
-    | undefined;
+    const organizationId = (user.organization_id ?? undefined) as
+      | string
+      | undefined;
 
     return await ctx.db.insert("documents", {
       title: args.title ?? "Untitled comment",
       ownerId: user.subject,
       organizationId,
       initialContent: args.initialContent,
+      type: args.type,
     });
   },
 });
@@ -52,48 +53,48 @@ export const get = query({
     if (!user) {
       throw new ConvexError("Unauthorized");
     }
-    
+
     const organizationId = (user.organization_id ?? undefined) as
-    | string
-    | undefined;
+      | string
+      | undefined;
 
     //search within organization
-  if (search && organizationId) {
-    return await ctx.db
-    .query("documents")
-    .withSearchIndex("search_title", (q) =>
-    q.search("title",search).eq("organizationId", organizationId)
-   )
-   .paginate(paginationOpts)
-  }
+    if (search && organizationId) {
+      return await ctx.db
+        .query("documents")
+        .withSearchIndex("search_title", (q) =>
+          q.search("title", search).eq("organizationId", organizationId)
+        )
+        .paginate(paginationOpts)
+    }
 
-  //personal search
+    //personal search
     if (search) {
       return await ctx.db
-      .query("documents")
-      .withSearchIndex("search_title", (q) => 
-        q.search("title", search).eq("ownerId", user.subject)
-    )
-    .paginate(paginationOpts)
+        .query("documents")
+        .withSearchIndex("search_title", (q) =>
+          q.search("title", search).eq("ownerId", user.subject)
+        )
+        .paginate(paginationOpts)
     }
 
     //all docs inside organization
     if (organizationId) {
       return await ctx.db
-    .query("documents")
-    .withIndex("by_organization_id", (q) => q.eq("organizationId", organizationId))
-    .paginate(paginationOpts);
+        .query("documents")
+        .withIndex("by_organization_id", (q) => q.eq("organizationId", organizationId))
+        .paginate(paginationOpts);
     }
 
     //All personal docs
     return await ctx.db
-    .query("documents")
-    .withIndex("by_owner_id", (q) => q.eq("ownerId", user.subject))
-    .paginate(paginationOpts);
+      .query("documents")
+      .withIndex("by_owner_id", (q) => q.eq("ownerId", user.subject))
+      .paginate(paginationOpts);
   },
-}); 
+});
 
-export const removeById = mutation ({
+export const removeById = mutation({
   args: { id: v.id("documents") },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -103,8 +104,8 @@ export const removeById = mutation ({
     }
 
     const organizationId = (user.organization_id ?? undefined) as
-    | string
-    | undefined;
+      | string
+      | undefined;
 
     const document = await ctx.db.get(args.id);
 
@@ -113,7 +114,7 @@ export const removeById = mutation ({
     }
 
     const isOwner = document.ownerId === user.subject;
-    const isOrganizationMember = 
+    const isOrganizationMember =
       !!(document.organizationId && document.organizationId === organizationId);
 
     if (!isOwner && !isOrganizationMember) {
@@ -124,7 +125,7 @@ export const removeById = mutation ({
   },
 });
 
-export const updateById = mutation ({
+export const updateById = mutation({
   args: { id: v.id("documents"), title: v.string() },
   handler: async (ctx, args) => {
     const user = await ctx.auth.getUserIdentity();
@@ -134,8 +135,8 @@ export const updateById = mutation ({
     }
 
     const organizationId = (user.organization_id ?? undefined) as
-    | string
-    | undefined;
+      | string
+      | undefined;
 
     const document = await ctx.db.get(args.id);
 
@@ -144,7 +145,7 @@ export const updateById = mutation ({
     }
 
     const isOwner = document.ownerId === user.subject;
-    const isOrganizationMember = 
+    const isOrganizationMember =
       !!(document.organizationId && document.organizationId === organizationId);
 
     if (!isOwner && !isOrganizationMember) {
