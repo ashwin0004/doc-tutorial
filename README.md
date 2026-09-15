@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Doc Tutorial
 
-## Getting Started
+A modern collaborative document editor built with Next.js, TypeScript, Tiptap, Liveblocks, Convex, and Clerk.
 
-First, run the development server:
+## 🚀 Overview
 
-```bash
+Doc Tutorial is a web-based document editing application designed to provide a modern and collaborative writing experience.
+
+The application allows users to create and manage documents through a rich text editor while supporting real-time collaboration and user authentication.
+
+## ✨ Features
+
+- 📝 Rich text document editor
+- 👥 Real-time collaborative editing
+- 🔐 User authentication with Clerk
+- 💾 Document data management with Convex
+- 🎨 Modern responsive UI
+- 🖊️ Tiptap-based editor
+- 🔄 Live collaboration using Liveblocks
+- 📄 Document management
+- 🧩 Reusable UI components
+- 🌙 Modern interface with theme support
+- 📊 Tables, images, links, highlighting and text formatting
+- ✏️ Multiple text editing tools
+- ⚡ Fast Next.js application
+
+## 🛠️ Technologies Used
+
+### Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Radix UI
+- Lucide React
+
+### Editor
+- Tiptap
+- ProseMirror
+- Tiptap Collaboration
+
+### Backend & Database
+- Convex
+
+### Authentication
+- Clerk
+
+### Real-Time Collaboration
+- Liveblocks
+
+## 📁 Project Structure
+
+```text
+doc-tutorial/
+│
+├── convex/              # Convex backend and database
+│
+├── public/              # Static assets
+│
+├── src/
+│   ├── app/             # Next.js application routes
+│   │   ├── api/         # API routes
+│   │   ├── documents/   # Document pages
+│   │   └── ...
+│   │
+│   ├── components/      # Reusable UI components
+│   ├── constants/       # Application constants
+│   ├── extensions/      # Editor extensions
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utility functions
+│   └── store/           # Application state management
+│
+├── liveblocks.config.ts # Liveblocks configuration
+├── next.config.ts       # Next.js configuration
+├── package.json         # Project dependencies and scripts
+└── README.md            # Project documentation
+
+
+⚙️ Getting Started
+1. Clone the repository
+git clone https://github.com/ashwin0004/doc-tutorial.git
+
+2. Navigate to the project
+cd doc-tutorial
+
+3. Install dependencies
+npm install
+
+4. Configure environment variables
+
+Create a .env.local file in the root directory and add the required environment variables for:
+
+Clerk
+Convex
+Liveblocks
+
+Example:
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
+CLERK_SECRET_KEY=your_key
+
+CONVEX_DEPLOYMENT=your_deployment
+
+LIVEBLOCKS_SECRET_KEY=your_key
+
+Do not commit your .env.local file to GitHub.
+
+5. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000
+📜 Available Scripts
+npm run dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Starts the development server.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm run build
 
-## Learn More
+Creates a production build.
 
-To learn more about Next.js, take a look at the following resources:
+npm run start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Starts the production server.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+npm run lint
 
-## Deploy on Vercel
+Runs the project's linting checks.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🌐 Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application can be deployed using platforms such as Vercel.
+
+Before deployment, make sure all required environment variables are configured in the deployment platform.
+
+🔑 Environment Variables
+
+The project uses external services that require environment variables.
+
+Make sure the following services are configured:
+
+Service	Purpose
+Clerk	Authentication
+Convex	Backend and database
+Liveblocks	Real-time collaboration
+🤝 Contributing
+
+Contributions, suggestions, and improvements are welcome.
+
+Fork the repository
+Create a feature branch
+Make your changes
+Commit your changes
+Push the branch
+Open a Pull Request
+📄 License
+
+This project is for educational and development purposes.
+
+👨‍💻 Author
+
+Ashwin Biju
+
+GitHub:
+https://github.com/ashwin0004
+
+
+### How it will look
+
+After you put this into `README.md` and commit it, GitHub will automatically render the Markdown on the repository's front page — exactly like the screenshot you showed. GitHub specifically recommends README files as the place to explain what a project does, how to install it, and how to use it. :contentReference[oaicite:4]{index=4}
+
+**Important:** I wouldn't put the environment-variable example in exactly that form unless those are actually the variable names your project uses. We should verify your `.env` usage first so the README doesn't contain incorrect setup instructions.
+
+If you want, **I can update the `README.md` directly in your `ashwin0004/doc-tutorial` GitHub repository with a proper project-specific README** rather than you manually copying it.
