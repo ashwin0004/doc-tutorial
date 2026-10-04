@@ -32,7 +32,13 @@ export async function POST(req: Request) {
     }
 
     const { room } = await req.json();
-    const document = await convex.query(api.documents.getById, { id: room });
+    let document;
+    try {
+        document = await convex.query(api.documents.getById, { id: room });
+    } catch (error) {
+        console.error("Liveblocks auth query error:", error);
+        return new Response("Unauthorized or Document Not Found", { status: 401 });
+    }
 
     if (!document) {
         return new Response("Unauthorized", { status: 401 });

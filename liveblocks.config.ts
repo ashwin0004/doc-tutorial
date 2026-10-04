@@ -8,6 +8,7 @@ declare global {
     // Each user's Presence, for useMyPresence, useOthers, etc.
     Presence: {
       cursor: { x: number; y: number } | null;
+      slideCursor?: { x: number; y: number; slideId: string } | null;
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
@@ -28,6 +29,7 @@ declare global {
       rowSizes: LiveMap<string, number>;
       rowHeaderWidth: number;
       columnHeaderHeight: number;
+      slides: LiveList<LiveObject<SlideData>>;
     };
 
     // Custom user info set when authenticating with a secret key
@@ -133,3 +135,13 @@ export type Layer =
   | PathLayer
   | TextLayer
   | NoteLayer;
+
+export type SlideData = {
+  [key: string]: string | undefined;
+  id: string;
+  title: string;
+  html: string;
+  notes?: string;
+  theme?: string;
+  layout?: string;
+};

@@ -24,7 +24,9 @@ export const TemplatesGallery = () => {
 
     const onTemplateClick = (title: string, initialContent: string) => {
         setIsCreating(true);
-        create({ title, initialContent, type: title === "Spreadsheet" ? "spreadsheet" : undefined })
+        const isPpt = title.toLowerCase().includes("pitch deck") || title.toLowerCase().includes("presentation") || title.toLowerCase().includes("ppt");
+        const docType = isPpt ? "ppt" : title === "Spreadsheet" ? "spreadsheet" : undefined;
+        create({ title, initialContent, type: docType })
             .catch(() => toast.error("Something went wrong"))
             .then((documentId) => {
                 toast.success("Document created")

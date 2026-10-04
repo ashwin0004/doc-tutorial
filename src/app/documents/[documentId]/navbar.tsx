@@ -28,7 +28,8 @@ import {
     FileText,
     CheckSquareIcon,
     NetworkIcon,
-    TableIcon
+    TableIcon,
+    MonitorPlay
 } from "lucide-react";
 import { useMutation } from "convex/react";
 import { useStorage } from "@liveblocks/react/suspense";
@@ -58,8 +59,8 @@ import { api } from "../../../../convex/_generated/api";
 
 interface NavbarProps {
     data: Doc<"documents">;
-    activeView?: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet";
-    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet") => void;
+    activeView?: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation";
+    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation") => void;
 };
 
 export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
@@ -70,6 +71,7 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
     const todos = useStorage((root) => root.todos);
     const spreadsheet = useStorage((root) => root.spreadsheet);
     const nodes = useStorage((root) => root.nodes);
+    const slides = useStorage((root) => root.slides);
 
     const onNewDocument = () => {
         mutation({
@@ -150,6 +152,14 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             nodes.forEach((node: any) => {
                 content += `- ${node.data?.label || "Node"}\n`;
+            });
+        } else if (activeView === "presentation") {
+            if (!slides || slides.length === 0) return;
+            content = "PRESENTATION SLIDES\n===================\n\n";
+            slides.forEach((slide, idx) => {
+                content += `--- SLIDE ${idx + 1}: ${slide.title} ---\n`;
+                if (slide.notes) content += `Notes: ${slide.notes}\n`;
+                content += `\n`;
             });
         }
 
@@ -402,6 +412,15 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
                                 >
                                     <TableIcon className="size-4 mr-2" />
                                     Sheet
+                                </Button>
+                                <Button
+                                    variant={activeView === "presentation" ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setActiveView?.("presentation")}
+                                    className={activeView === "presentation" ? "bg-white shadow-sm font-semibold text-orange-600" : ""}
+                                >
+                                    <MonitorPlay className="size-4 mr-2 text-orange-500" />
+                                    PPT
                                 </Button>
                             </div>
                         );

@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { SiGoogledocs } from "react-icons/si";
 import { useRouter } from "next/navigation";
-import { Building2Icon, CircleUserIcon } from "lucide-react";
+import { Building2Icon, CircleUserIcon, MonitorPlay, TableIcon } from "lucide-react";
 
 import { TableCell, TableRow } from "@/components/ui/table";
 
@@ -15,13 +15,22 @@ interface DocumentRowProps {
 export const DocumentRow = ({ document }: DocumentRowProps) => {
     const router = useRouter();
 
+    const isPpt = document.type === "ppt" || document.type === "presentation";
+    const isSheet = document.type === "spreadsheet";
+
     return (
         <TableRow 
         onClick={() => router.push(`/documents/${document._id}`)}
         className="cursor-pointer"
         >
             <TableCell className="w-[50px]">
-                <SiGoogledocs className="size-6 fill-blue-500" />
+                {isPpt ? (
+                    <MonitorPlay className="size-6 text-orange-500" />
+                ) : isSheet ? (
+                    <TableIcon className="size-6 text-emerald-500" />
+                ) : (
+                    <SiGoogledocs className="size-6 fill-blue-500" />
+                )}
             </TableCell>
             <TableCell className="font-medium md:w-[45%]">
                 {document.title}

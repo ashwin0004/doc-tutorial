@@ -14,6 +14,7 @@ import dynamic from "next/dynamic";
 
 const Flowchart = dynamic(() => import("./flowchart").then(mod => mod.Flowchart), { ssr: false });
 const SpreadsheetComponent = dynamic(() => import("./spreadsheet").then(mod => mod.SpreadsheetComponent), { ssr: false });
+const PptEditor = dynamic(() => import("./ppt/ppt-editor").then(mod => mod.PptEditor), { ssr: false });
 
 interface DocumentProps {
   preloadedDocument: Preloaded<typeof api.documents.getById>;
@@ -21,18 +22,23 @@ interface DocumentProps {
 
 export const Document = ({ preloadedDocument }: DocumentProps) => {
   const document = usePreloadedQuery(preloadedDocument);
-  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet">(document.type === "spreadsheet" ? "spreadsheet" : "document");
+  const initialView = document.type === "ppt" || document.type === "presentation"
+    ? "presentation"
+    : document.type === "spreadsheet"
+    ? "spreadsheet"
+    : "document";
+  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation">(initialView);
 
   return (
     <Room>
       <div className="min-h-screen bg-[#FAFBFD]">
-        <div className="felx flex-col px-4 pt-2 gap-y-2 fixed top-0 left-0 right-0 z-10 bg-[#FAFBFD] print:hidden">
+        <div className="flex flex-col px-4 pt-2 gap-y-2 fixed top-0 left-0 right-0 z-10 bg-[#FAFBFD] print:hidden">
           <Navbar data={document} activeView={activeView} setActiveView={setActiveView} />
           <div className={activeView === "document" ? "block" : "hidden"}>
             <Toolbar />
           </div>
         </div>
-        <div className="pt-[114px] print:pt-0">
+        <div className={activeView === "presentation" ? "pt-[56px]" : "pt-[114px] print:pt-0"}>
           <div className={activeView === "document" ? "block" : "hidden"}>
             <Editor initialContent={document.initialContent} />
           </div>
@@ -54,6 +60,11 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
           {activeView === "spreadsheet" && (
             <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)] print:relative print:top-0 print:h-auto print:block">
               <SpreadsheetComponent />
+            </div>
+          )}
+          {activeView === "presentation" && (
+            <div className="fixed top-[56px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-56px)] print:relative print:top-0 print:h-auto print:block">
+              <PptEditor />
             </div>
           )}
         </div>

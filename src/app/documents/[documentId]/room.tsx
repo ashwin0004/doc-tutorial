@@ -15,7 +15,7 @@ import { RIGHT_MARGIN_DEFAULT, LEFT_MARGIN_DEFAULT } from "@/constants/margins";
 
 import { getUsers, getDocuments } from "./actions";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { Layer, Todo } from "../../../../liveblocks.config";
+import { Layer, Todo, SlideData } from "../../../../liveblocks.config";
 
 type User = { id: string; name: string; avatar: string; color: string; };
 
@@ -48,6 +48,11 @@ export function Room({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ room }),
     });
+
+    if (!response.ok) {
+      const errText = await response.text().catch(() => "Auth failed");
+      throw new Error(errText || "Authentication failed");
+    }
 
     return await response.json();
   }, [params.documentId]);
@@ -108,6 +113,7 @@ export function Room({ children }: { children: ReactNode }) {
           rowSizes: new LiveMap<string, number>([]),
           rowHeaderWidth: 40,
           columnHeaderHeight: 32,
+          slides: new LiveList<LiveObject<SlideData>>([]),
         }}
       >
         <ClientSideSuspense fallback={<FullscreenLoader label="Room loading..." />}>

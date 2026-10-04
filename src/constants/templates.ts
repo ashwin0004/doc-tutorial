@@ -6,6 +6,12 @@ export const templates = [
     initialContent: "",
   },
   {
+    id: "presentation-deck",
+    label: "Pitch Deck (PPT)",
+    imageUrl: "/presentation-deck.svg",
+    initialContent: "",
+  },
+  {
     id: "software-proposal",
     label: "Software development proposal",
     imageUrl: "/software-proposal.svg",
