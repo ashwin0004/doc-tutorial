@@ -9,11 +9,12 @@ import {
   useCanRedo,
 } from "@liveblocks/react/suspense";
 import { LiveObject } from "@liveblocks/client";
-import { SlideData, RibbonTab, SlideLayoutType, SlideProposal, SlideTheme, SlideAnimationType } from "./types";
+import { SlideData, RibbonTab, SlideLayoutType, SlideProposal, SlideTheme, SlideAnimationType, InsertElementType } from "./types";
 import {
   generateSlideHtml,
   generateContinuationSlideHtml,
   getTheme,
+  getAnimationCss,
   SLIDE_THEMES,
   STARTER_SLIDES,
 } from "./slide-templates";
@@ -283,12 +284,11 @@ export const PptEditor: React.FC = () => {
           }
           const container = doc.querySelector(".slide-container") as HTMLElement | null;
           if (container) {
-            if (theme.animation === "fade") container.style.animation = "pptFadeIn 0.5s ease-out both";
-            else if (theme.animation === "slide-up") container.style.animation = "pptSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both";
-            else if (theme.animation === "zoom") container.style.animation = "pptZoomIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both";
-            else if (theme.animation === "flip") container.style.animation = "pptFlipIn 0.55s ease-out both";
-            else if (theme.animation === "wipe") container.style.animation = "pptWipeIn 0.55s ease-out both";
-            else container.style.animation = "none";
+            const anim = theme.animation || "fade";
+            const dur = theme.animationDuration || "0.5s";
+            const animCss = getAnimationCss(anim, dur);
+            const animVal = animCss.replace("animation:", "").replace(";", "").trim();
+            container.style.animation = animVal;
           }
           doc.querySelectorAll(".badge").forEach((el) => {
             (el as HTMLElement).style.background = theme.cardBg;
@@ -462,9 +462,9 @@ export const PptEditor: React.FC = () => {
     [activeSlideId, currentThemeId]
   );
 
-  // Insert Element to slide with intelligent auto-continuation pagination
+  // Insert Element to slide directly onto active canvas
   const handleInsertElement = useCallback(
-    (type: "textbox" | "card" | "stats" | "quote" | "rect" | "circle" | "image" | "table" | "continuation") => {
+    (type: InsertElementType | string) => {
       if (!activeSlide) return;
 
       if (type === "continuation") {
@@ -477,22 +477,37 @@ export const PptEditor: React.FC = () => {
       let snippet = "";
       switch (type) {
         case "textbox":
-          snippet = `<div style="position: relative; padding: 12px; margin: 12px 0; font-size: 26px; font-weight: 700; color: inherit; width: fit-content;">Double click to edit title</div>`;
+          snippet = `<div data-ppt-shape="textbox" style="position: absolute; left: 440px; top: 280px; padding: 12px 24px; font-size: 28px; font-weight: 700; color: inherit; width: fit-content; min-width: 240px; border: 1px dashed rgba(255,255,255,0.25); border-radius: 8px; z-index: 15; cursor: move; box-sizing: border-box;">Text Box</div>`;
           break;
         case "card":
-          snippet = `<div class="card" style="position: relative; margin: 16px 0; max-width: 480px;"><h3>New Insight Card</h3><p style="font-size: 16px; opacity: 0.85; margin-top: 8px;">Highlight key value propositions or project milestones here.</p></div>`;
+          snippet = `<div class="card" data-ppt-shape="card" style="position: absolute; left: 400px; top: 220px; width: 480px; z-index: 15; cursor: move; box-sizing: border-box;"><h3>New Insight Card</h3><p style="font-size: 16px; opacity: 0.85; margin-top: 8px;">Highlight key value propositions or project milestones here.</p></div>`;
           break;
         case "stats":
-          snippet = `<div class="card" style="position: relative; text-align: center; padding: 24px; margin: 16px 0; width: 220px;"><div style="font-size: 46px; font-weight: 800; color: #f97316;">99.9%</div><div style="font-size: 15px; font-weight: 600; margin-top: 4px;">Milestone KPI</div></div>`;
+          snippet = `<div class="card" data-ppt-shape="stats" style="position: absolute; left: 480px; top: 220px; text-align: center; padding: 28px; width: 280px; z-index: 15; cursor: move; box-sizing: border-box;"><div style="font-size: 52px; font-weight: 800; color: #f97316;">99.9%</div><div style="font-size: 16px; font-weight: 600; margin-top: 6px;">Milestone KPI</div></div>`;
           break;
         case "quote":
-          snippet = `<blockquote style="position: relative; font-size: 26px; font-weight: 600; border-left: 4px solid #f97316; padding-left: 20px; margin: 20px 0; max-width: 800px;">“Simplicity is the ultimate sophistication.”</blockquote>`;
+          snippet = `<blockquote data-ppt-shape="quote" style="position: absolute; left: 240px; top: 260px; font-size: 28px; font-weight: 600; border-left: 5px solid #f97316; padding-left: 24px; max-width: 800px; z-index: 15; cursor: move; box-sizing: border-box;">“Simplicity is the ultimate sophistication.”</blockquote>`;
           break;
         case "rect":
-          snippet = `<div style="position: relative; width: 260px; height: 130px; border-radius: 12px; background: rgba(249, 115, 22, 0.12); border: 2px solid #f97316; margin: 16px 0;"></div>`;
+          snippet = `<div data-ppt-shape="rect" style="position: absolute; left: 490px; top: 240px; width: 300px; height: 180px; border-radius: 6px; background: rgba(249, 115, 22, 0.2); border: 2px solid #f97316; display: flex; align-items: center; justify-content: center; text-align: center; color: inherit; font-size: 20px; font-weight: 600; cursor: move; z-index: 15; box-sizing: border-box; padding: 16px;">Rectangle</div>`;
+          break;
+        case "rounded-rect":
+          snippet = `<div data-ppt-shape="rounded-rect" style="position: absolute; left: 490px; top: 240px; width: 300px; height: 180px; border-radius: 28px; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; text-align: center; color: inherit; font-size: 20px; font-weight: 600; cursor: move; z-index: 15; box-sizing: border-box; padding: 16px;">Rounded Shape</div>`;
           break;
         case "circle":
-          snippet = `<div style="position: relative; width: 140px; height: 140px; border-radius: 9999px; background: rgba(59, 130, 246, 0.15); border: 2px solid #3b82f6; margin: 16px 0;"></div>`;
+          snippet = `<div data-ppt-shape="circle" style="position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; border-radius: 9999px; background: rgba(59, 130, 246, 0.2); border: 2px solid #3b82f6; display: flex; align-items: center; justify-content: center; text-align: center; color: inherit; font-size: 20px; font-weight: 600; cursor: move; z-index: 15; box-sizing: border-box; padding: 16px;">Circle</div>`;
+          break;
+        case "diamond":
+          snippet = `<div data-ppt-shape="diamond" style="position: absolute; left: 540px; top: 240px; width: 180px; height: 180px; transform: rotate(45deg); background: rgba(168, 85, 247, 0.22); border: 2px solid #a855f7; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: move; z-index: 15; box-sizing: border-box;"><span style="transform: rotate(-45deg); color: inherit; font-size: 18px; font-weight: 600;">Diamond</span></div>`;
+          break;
+        case "triangle":
+          snippet = `<div data-ppt-shape="triangle" style="position: absolute; left: 540px; top: 230px; width: 210px; height: 190px; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); background: rgba(234, 179, 8, 0.28); border: 2px solid #eab308; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 24px; text-align: center; color: inherit; font-size: 18px; font-weight: 600; cursor: move; z-index: 15; box-sizing: border-box;">Triangle</div>`;
+          break;
+        case "arrow":
+          snippet = `<div data-ppt-shape="arrow" style="position: absolute; left: 470px; top: 260px; width: 290px; height: 130px; clip-path: polygon(0% 25%, 65% 25%, 65% 0%, 100% 50%, 65% 100%, 65% 75%, 0% 75%); background: rgba(239, 68, 68, 0.25); border: 2px solid #ef4444; display: flex; align-items: center; justify-content: center; text-align: center; color: inherit; font-size: 18px; font-weight: 600; cursor: move; z-index: 15; box-sizing: border-box; padding-right: 40px;">Arrow</div>`;
+          break;
+        case "star":
+          snippet = `<div data-ppt-shape="star" style="position: absolute; left: 540px; top: 230px; width: 200px; height: 200px; clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); background: rgba(245, 158, 11, 0.35); border: 2px solid #f59e0b; display: flex; align-items: center; justify-content: center; text-align: center; color: inherit; font-size: 18px; font-weight: 700; cursor: move; z-index: 15; box-sizing: border-box;">Star</div>`;
           break;
         case "image": {
           setIsImageModalOpen(true);
@@ -500,24 +515,24 @@ export const PptEditor: React.FC = () => {
         }
         case "table":
           snippet = `
-            <table style="width: 100%; max-width: 700px; border-collapse: collapse; margin: 20px 0; font-size: 15px;">
+            <table data-ppt-shape="table" style="position: absolute; left: 290px; top: 220px; width: 700px; border-collapse: collapse; font-size: 15px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); z-index: 15; cursor: move; box-sizing: border-box;">
               <thead>
                 <tr style="border-bottom: 2px solid rgba(255,255,255,0.2);">
-                  <th style="padding: 10px; text-align: left;">Category</th>
-                  <th style="padding: 10px; text-align: left;">Metric</th>
-                  <th style="padding: 10px; text-align: left;">Status</th>
+                  <th style="padding: 12px; text-align: left;">Category</th>
+                  <th style="padding: 12px; text-align: left;">Metric</th>
+                  <th style="padding: 12px; text-align: left;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                  <td style="padding: 10px;">Growth</td>
-                  <td style="padding: 10px;">+142%</td>
-                  <td style="padding: 10px; color: #10b981;">On Track</td>
+                  <td style="padding: 12px;">Growth</td>
+                  <td style="padding: 12px;">+142%</td>
+                  <td style="padding: 12px; color: #10b981;">On Track</td>
                 </tr>
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                  <td style="padding: 10px;">Retention</td>
-                  <td style="padding: 10px;">96.8%</td>
-                  <td style="padding: 10px; color: #10b981;">Optimal</td>
+                  <td style="padding: 12px;">Retention</td>
+                  <td style="padding: 12px;">96.8%</td>
+                  <td style="padding: 12px; color: #10b981;">Optimal</td>
                 </tr>
               </tbody>
             </table>
@@ -532,24 +547,16 @@ export const PptEditor: React.FC = () => {
         const doc = parser.parseFromString(activeSlide.html, "text/html");
         const container = doc.querySelector(".slide-container") || doc.body;
 
-        // Check if current slide is at capacity
-        const contentChildren = Array.from(container.children).filter(
-          (el) => !el.classList.contains("badge") && !el.classList.contains("footer") && el.tagName !== "H1" && el.tagName !== "H2"
-        );
-        const hasLargeGrid = container.querySelector("table, [style*='grid-template-columns']") !== null;
-        const isSlideFull = contentChildren.length >= 3 || (hasLargeGrid && contentChildren.length >= 2);
-
-        if (isSlideFull) {
-          // Slide has no more vertical space - automatically continue onto next slide!
-          createContinuationSlide(snippet);
-          return;
-        }
-
         const temp = doc.createElement("div");
         temp.innerHTML = snippet;
         const newEl = temp.firstElementChild;
         if (newEl) {
-          container.appendChild(newEl);
+          const footer = container.querySelector(".footer");
+          if (footer) {
+            container.insertBefore(newEl, footer);
+          } else {
+            container.appendChild(newEl);
+          }
           const clean = "<!doctype html>\n" + doc.documentElement.outerHTML;
           updateSlideHtml(clean);
           toast.success("Element inserted into slide");
@@ -575,7 +582,12 @@ export const PptEditor: React.FC = () => {
         temp.innerHTML = snippet;
         const newEl = temp.firstElementChild;
         if (newEl) {
-          container.appendChild(newEl);
+          const footer = container.querySelector(".footer");
+          if (footer) {
+            container.insertBefore(newEl, footer);
+          } else {
+            container.appendChild(newEl);
+          }
           const clean = "<!doctype html>\n" + doc.documentElement.outerHTML;
           updateSlideHtml(clean);
           toast.success("Image inserted into slide");
@@ -622,6 +634,7 @@ export const PptEditor: React.FC = () => {
           doc.querySelectorAll("[data-ppt-hover]").forEach((el) => el.removeAttribute("data-ppt-hover"));
           doc.querySelectorAll("[data-ppt-selected]").forEach((el) => el.removeAttribute("data-ppt-selected"));
           doc.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
+          doc.querySelectorAll(".ppt-resize-handle").forEach((el) => el.remove());
           doc.querySelectorAll("#editor-interactive-styles").forEach((el) => el.remove());
           doc.querySelectorAll("#ppt-slideshow-anim").forEach((el) => el.remove());
 
@@ -719,13 +732,26 @@ export const PptEditor: React.FC = () => {
   // Full HTML Presentation Export
   const handleExportHtml = () => {
     const combinedSlides = slides
-      .map(
-        (s, idx) => `
+      .map((s, idx) => {
+        let cleanHtml = s.html;
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(cleanHtml, "text/html");
+          doc.querySelectorAll(".ppt-resize-handle").forEach((el) => el.remove());
+          doc.querySelectorAll("[data-ppt-hover]").forEach((el) => el.removeAttribute("data-ppt-hover"));
+          doc.querySelectorAll("[data-ppt-selected]").forEach((el) => el.removeAttribute("data-ppt-selected"));
+          doc.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
+          doc.querySelectorAll("#editor-interactive-styles").forEach((el) => el.remove());
+          cleanHtml = "<!doctype html>\n" + doc.documentElement.outerHTML;
+        } catch {
+          // fallback to raw
+        }
+        return `
         <div class="presentation-slide" id="slide-${idx + 1}" style="width: 1280px; height: 720px; margin: 40px auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden;">
-          <iframe srcdoc="${s.html.replace(/"/g, "&quot;")}" style="width: 1280px; height: 720px; border: 0;" sandbox="allow-same-origin"></iframe>
+          <iframe srcdoc="${cleanHtml.replace(/"/g, "&quot;")}" style="width: 1280px; height: 720px; border: 0;" sandbox="allow-same-origin"></iframe>
         </div>
-      `
-      )
+      `;
+      })
       .join("\n");
 
     const exportDoc = `<!doctype html>
@@ -751,6 +777,57 @@ export const PptEditor: React.FC = () => {
     URL.revokeObjectURL(url);
     toast.success("HTML presentation downloaded!");
   };
+
+  // Global Keyboard Shortcuts (Undo, Redo, Delete selected, Duplicate selected)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl?.tagName === "INPUT" ||
+        activeEl?.tagName === "TEXTAREA" ||
+        activeEl?.getAttribute("contenteditable") === "true";
+
+      if (isInput) return;
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        if (e.shiftKey) {
+          if (canRedo) {
+            e.preventDefault();
+            history.redo();
+          }
+        } else {
+          if (canUndo) {
+            e.preventDefault();
+            history.undo();
+          }
+        }
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        if (canRedo) {
+          e.preventDefault();
+          history.redo();
+        }
+        return;
+      }
+
+      if (selectionStyle && (e.key === "Delete" || e.key === "Backspace")) {
+        e.preventDefault();
+        slideIframeRef.current?.deleteSelected();
+        return;
+      }
+
+      if (selectionStyle && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        slideIframeRef.current?.duplicateSelected();
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [canUndo, canRedo, history, selectionStyle]);
 
   const currentDisplayHtml = previewedProposal ? previewedProposal.html : activeSlide.html;
 
@@ -786,6 +863,8 @@ export const PptEditor: React.FC = () => {
         onFormat={(cmd, val) => slideIframeRef.current?.executeFormat(cmd, val)}
         onDeleteSelected={() => slideIframeRef.current?.deleteSelected()}
         onDuplicateSelected={() => slideIframeRef.current?.duplicateSelected()}
+        onBringForward={() => slideIframeRef.current?.bringForward?.()}
+        onSendBackward={() => slideIframeRef.current?.sendBackward?.()}
       />
 
       {/* Main Workspace: Left Thumbnails + Center Canvas + Right AI Drawer */}

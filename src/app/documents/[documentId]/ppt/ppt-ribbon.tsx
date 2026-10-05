@@ -49,7 +49,16 @@ import {
   AArrowDown,
   AArrowUp,
   Baseline,
+  PaintBucket,
+  BringToFront,
+  SendToBack,
+  Diamond,
+  Triangle,
+  ArrowRight,
+  Star,
+  Shapes,
 } from "lucide-react";
+import { InsertElementType } from "./types";
 
 interface PptRibbonProps {
   activeTab: RibbonTab;
@@ -59,7 +68,7 @@ interface PptRibbonProps {
   onRedo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  onInsertElement: (type: "textbox" | "card" | "stats" | "quote" | "rect" | "circle" | "image" | "table" | "continuation") => void;
+  onInsertElement: (type: InsertElementType | string) => void;
   onApplyTheme: (themeId: string, applyToAll?: boolean) => void;
   currentThemeId: string;
   onOpenCustomDesign?: () => void;
@@ -80,6 +89,8 @@ interface PptRibbonProps {
   onFormat: (command: string, value?: string) => void;
   onDeleteSelected: () => void;
   onDuplicateSelected: () => void;
+  onBringForward?: () => void;
+  onSendBackward?: () => void;
 }
 
 const FONT_FAMILIES = [
@@ -134,8 +145,12 @@ export const PptRibbon: React.FC<PptRibbonProps> = ({
   onFormat,
   onDeleteSelected,
   onDuplicateSelected,
+  onBringForward,
+  onSendBackward,
 }) => {
   const [selectedColor, setSelectedColor] = useState("#f97316");
+  const [fillColor, setFillColor] = useState("#f97316");
+  const [borderColor, setBorderColor] = useState("#f97316");
 
   const hasSelection = Boolean(selectionStyle?.hasSelection);
 
@@ -467,6 +482,150 @@ export const PptRibbon: React.FC<PptRibbonProps> = ({
 
             <div className="h-5 w-[1px] bg-border mx-1" />
 
+            {/* Shape Fill Color Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 px-2 text-xs gap-1.5 bg-white dark:bg-slate-800" title="Shape Fill Color">
+                  <PaintBucket className="size-3.5 text-amber-500" />
+                  <span className="w-3.5 h-3.5 rounded-sm border border-black/20" style={{ backgroundColor: fillColor }} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="p-2 w-48">
+                <DropdownMenuLabel className="text-xs">Fill Color</DropdownMenuLabel>
+                <div className="grid grid-cols-6 gap-1 p-1">
+                  {PRESET_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setFillColor(c);
+                        onFormat("fillColor", c);
+                      }}
+                      className="size-5 rounded-full border border-black/20 hover:scale-110 transition-transform"
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                  <button
+                    onClick={() => {
+                      setFillColor("transparent");
+                      onFormat("fillColor", "transparent");
+                    }}
+                    className="col-span-6 mt-1 text-[11px] py-1 border border-dashed rounded text-center hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    No Fill (Transparent)
+                  </button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Shape Border Color Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 px-2 text-xs gap-1.5 bg-white dark:bg-slate-800" title="Shape Outline & Border">
+                  <Square className="size-3.5 text-indigo-500" />
+                  <span className="w-3.5 h-3.5 rounded-sm border-2" style={{ borderColor: borderColor }} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="p-2 w-48">
+                <DropdownMenuLabel className="text-xs">Border Color</DropdownMenuLabel>
+                <div className="grid grid-cols-6 gap-1 p-1">
+                  {PRESET_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => {
+                        setBorderColor(c);
+                        onFormat("borderColor", c);
+                      }}
+                      className="size-5 rounded-full border border-black/20 hover:scale-110 transition-transform"
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-xs">Border Width</DropdownMenuLabel>
+                <div className="flex items-center gap-1 p-1">
+                  {["1px", "2px", "4px", "6px"].map((w) => (
+                    <Button
+                      key={w}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onFormat("borderWidth", w)}
+                      className="h-6 px-1.5 text-[11px] font-mono"
+                    >
+                      {w}
+                    </Button>
+                  ))}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Layering: Bring Forward / Send Backward */}
+            <div className="flex items-center border border-border rounded bg-white dark:bg-slate-800">
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={!hasSelection}
+                onClick={onBringForward || (() => onFormat("zIndex", "forward"))}
+                className="size-7 rounded-none"
+                title="Bring Forward"
+              >
+                <BringToFront className="size-3.5 text-blue-500" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                disabled={!hasSelection}
+                onClick={onSendBackward || (() => onFormat("zIndex", "backward"))}
+                className="size-7 rounded-none"
+                title="Send Backward"
+              >
+                <SendToBack className="size-3.5 text-blue-500" />
+              </Button>
+            </div>
+
+            <div className="h-5 w-[1px] bg-border mx-1" />
+
+            {/* Shapes Dropdown Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-800 font-medium">
+                  <Shapes className="size-3.5 text-orange-500" />
+                  Shapes
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 p-2">
+                <DropdownMenuLabel className="text-xs">Insert Shape</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onInsertElement("rect")} className="gap-2 text-xs cursor-pointer">
+                  <Square className="size-4 text-orange-500" />
+                  Rectangle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("rounded-rect")} className="gap-2 text-xs cursor-pointer">
+                  <Square className="size-4 text-emerald-500 rounded-sm" />
+                  Rounded Rectangle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("circle")} className="gap-2 text-xs cursor-pointer">
+                  <Circle className="size-4 text-blue-500" />
+                  Circle / Ellipse
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("diamond")} className="gap-2 text-xs cursor-pointer">
+                  <Diamond className="size-4 text-purple-500" />
+                  Diamond
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("triangle")} className="gap-2 text-xs cursor-pointer">
+                  <Triangle className="size-4 text-amber-500" />
+                  Triangle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("arrow")} className="gap-2 text-xs cursor-pointer">
+                  <ArrowRight className="size-4 text-rose-500" />
+                  Arrow
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("star")} className="gap-2 text-xs cursor-pointer">
+                  <Star className="size-4 text-yellow-500" />
+                  Star
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Insert Fast Elements */}
             <Button
               size="sm"
@@ -544,6 +703,58 @@ export const PptRibbon: React.FC<PptRibbonProps> = ({
               <Type className="size-3.5 text-blue-500" />
               Text Box
             </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onInsertElement("rect")}
+              className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-800 font-medium"
+            >
+              <Square className="size-3.5 text-orange-500" />
+              Rectangle
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onInsertElement("circle")}
+              className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-800 font-medium"
+            >
+              <Circle className="size-3.5 text-blue-500" />
+              Circle
+            </Button>
+
+            {/* More Shapes Menu in Insert Tab */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 text-xs gap-1 bg-white dark:bg-slate-800">
+                  <Shapes className="size-3.5 text-indigo-500" />
+                  More Shapes
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 p-2">
+                <DropdownMenuItem onClick={() => onInsertElement("rounded-rect")} className="gap-2 text-xs cursor-pointer">
+                  <Square className="size-4 text-emerald-500 rounded-sm" />
+                  Rounded Rectangle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("diamond")} className="gap-2 text-xs cursor-pointer">
+                  <Diamond className="size-4 text-purple-500" />
+                  Diamond
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("triangle")} className="gap-2 text-xs cursor-pointer">
+                  <Triangle className="size-4 text-amber-500" />
+                  Triangle
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("arrow")} className="gap-2 text-xs cursor-pointer">
+                  <ArrowRight className="size-4 text-rose-500" />
+                  Arrow
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onInsertElement("star")} className="gap-2 text-xs cursor-pointer">
+                  <Star className="size-4 text-yellow-500" />
+                  Star
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               size="sm"
               variant="outline"
@@ -571,24 +782,7 @@ export const PptRibbon: React.FC<PptRibbonProps> = ({
               <Quote className="size-3.5 text-teal-500" />
               Quote Block
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onInsertElement("rect")}
-              className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-800"
-            >
-              <Square className="size-3.5 text-indigo-500" />
-              Rectangle
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onInsertElement("circle")}
-              className="h-8 text-xs gap-1.5 bg-white dark:bg-slate-800"
-            >
-              <Circle className="size-3.5 text-pink-500" />
-              Circle
-            </Button>
+
             <Button
               size="sm"
               variant="outline"

@@ -21,6 +21,7 @@ import {
     SpellCheckIcon, 
     Undo2Icon, 
     MessageSquarePlusIcon,  
+    CheckSquareIcon,
     ListTodoIcon, 
     RemoveFormattingIcon, 
     Link2Icon,
@@ -666,7 +667,7 @@ const ToolbarButton = ({
     }
 
 export const Toolbar = () => {
-    const { editor } = useEditorStore();
+    const { editor, isTodoOpen, toggleTodoOpen } = useEditorStore();
 
     const sections: {
         label: string;
@@ -726,6 +727,12 @@ export const Toolbar = () => {
                 icon: MessageSquarePlusIcon,
                 onClick: () =>  editor?.chain().focus().addPendingComment().run(),
                 isActive: editor?.isActive("liveblocksCommentMark") 
+            },
+            {
+                label: "To-Do List",
+                icon: CheckSquareIcon,
+                onClick: () => toggleTodoOpen(),
+                isActive: isTodoOpen,
             },
             {
                 label: "List Todo",

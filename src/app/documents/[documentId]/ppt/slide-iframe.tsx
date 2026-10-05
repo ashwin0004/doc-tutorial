@@ -15,7 +15,13 @@ export interface SelectedElementStyle {
   fontSize: string;
   fontFamily: string;
   color: string;
+  fillColor?: string;
+  borderColor?: string;
+  borderWidth?: string;
+  borderRadius?: string;
   textAlign: string;
+  isShape?: boolean;
+  shapeType?: string;
   hasSelection: boolean;
 }
 
@@ -23,6 +29,8 @@ export interface SlideIframeHandle {
   executeFormat: (command: string, value?: string) => void;
   deleteSelected: () => void;
   duplicateSelected: () => void;
+  bringForward?: () => void;
+  sendBackward?: () => void;
 }
 
 interface SlideIframeProps {
@@ -195,6 +203,7 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
     clone.querySelectorAll("[data-ppt-hover]").forEach((el) => el.removeAttribute("data-ppt-hover"));
     clone.querySelectorAll("[data-ppt-selected]").forEach((el) => el.removeAttribute("data-ppt-selected"));
     clone.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
+    clone.querySelectorAll(".ppt-resize-handle").forEach((el) => el.remove());
     clone.querySelectorAll(".slide-container").forEach((el) => {
       el.classList.remove(
         "ppt-anim-fade",
@@ -249,6 +258,8 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
     const iframe = iframeRef.current;
     const win = iframe?.contentWindow || window;
     const computed = win.getComputedStyle(el);
+    const shapeAttr = el.getAttribute("data-ppt-shape");
+    const isShape = Boolean(shapeAttr) || el.classList.contains("card") || el.tagName === "DIV";
 
     onSelectionStyleChange({
       tagName: el.tagName.toLowerCase(),
@@ -258,7 +269,13 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
       fontSize: computed.fontSize,
       fontFamily: computed.fontFamily,
       color: computed.color,
+      fillColor: computed.backgroundColor,
+      borderColor: computed.borderColor,
+      borderWidth: computed.borderWidth,
+      borderRadius: computed.borderRadius,
       textAlign: computed.textAlign,
+      isShape,
+      shapeType: shapeAttr || undefined,
       hasSelection: true,
     });
   }, [onSelectionStyleChange]);
@@ -289,6 +306,7 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
             if (value) doc.execCommand("foreColor", false, value);
             break;
           case "backgroundColor":
+          case "fillColor":
             if (value) doc.execCommand("hiliteColor", false, value);
             break;
           case "fontFamily":
@@ -342,8 +360,26 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
           if (value) el.style.color = value;
           break;
         }
-        case "backgroundColor": {
+        case "backgroundColor":
+        case "fillColor": {
           if (value) el.style.backgroundColor = value;
+          break;
+        }
+        case "borderColor": {
+          if (value) el.style.borderColor = value;
+          break;
+        }
+        case "borderWidth": {
+          if (value) {
+            el.style.borderWidth = value;
+            if (!el.style.borderStyle || el.style.borderStyle === "none") {
+              el.style.borderStyle = "solid";
+            }
+          }
+          break;
+        }
+        case "borderRadius": {
+          if (value) el.style.borderRadius = value;
           break;
         }
         case "textAlign": {
@@ -358,6 +394,7 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
     deleteSelected: () => {
       const el = activeSelectedRef.current;
       if (el && el.parentElement && el !== el.ownerDocument.body) {
+        el.ownerDocument.querySelectorAll(".ppt-resize-handle").forEach((h) => h.remove());
         el.remove();
         activeSelectedRef.current = null;
         updateSelectionReport(null);
@@ -367,19 +404,35 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
     duplicateSelected: () => {
       const el = activeSelectedRef.current;
       if (el && el.parentElement && el !== el.ownerDocument.body) {
+        el.ownerDocument.querySelectorAll(".ppt-resize-handle").forEach((h) => h.remove());
         const clone = el.cloneNode(true) as HTMLElement;
         clone.removeAttribute("data-ppt-selected");
         clone.removeAttribute("data-ppt-hover");
         clone.removeAttribute("contenteditable");
+        clone.querySelectorAll(".ppt-resize-handle").forEach((h) => h.remove());
 
         const currentTop = parseInt(el.style.top || "0", 10);
         const currentLeft = parseInt(el.style.left || "0", 10);
-        clone.style.top = `${currentTop + 20}px`;
-        clone.style.left = `${currentLeft + 20}px`;
+        clone.style.top = `${currentTop + 24}px`;
+        clone.style.left = `${currentLeft + 24}px`;
 
         el.parentElement.appendChild(clone);
         commitHtmlChange(true);
       }
+    },
+    bringForward: () => {
+      const el = activeSelectedRef.current;
+      if (!el) return;
+      const currentZ = parseInt(el.style.zIndex || "10", 10);
+      el.style.zIndex = `${currentZ + 5}`;
+      commitHtmlChange(true);
+    },
+    sendBackward: () => {
+      const el = activeSelectedRef.current;
+      if (!el) return;
+      const currentZ = parseInt(el.style.zIndex || "10", 10);
+      el.style.zIndex = `${Math.max(1, currentZ - 5)}`;
+      commitHtmlChange(true);
     },
   }));
 
@@ -494,53 +547,76 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
       doc.head.appendChild(injectedStyle);
     }
 
-    // Resolves which element should be made contenteditable when clicked or focused
-    const resolveTextElement = (target: HTMLElement): HTMLElement | null => {
-      if (!target || target === doc.body || target === doc.documentElement) return null;
-      if (target.classList?.contains("slide-container")) return null;
+    // Helper to remove all resize handles
+    const removeResizeHandles = () => {
+      doc.querySelectorAll(".ppt-resize-handle").forEach((h) => h.remove());
+    };
 
-      const inlineTags = ["SPAN", "STRONG", "EM", "B", "I", "U", "S", "SMALL", "MARK", "SUB", "SUP", "A", "CODE"];
-      if (inlineTags.includes(target.tagName)) {
-        const parentBlock = target.closest("h1, h2, h3, h4, h5, h6, p, blockquote, li, td, th") as HTMLElement | null;
-        if (parentBlock) return parentBlock;
-        const parentDiv = target.closest("div") as HTMLElement | null;
-        if (parentDiv && !parentDiv.classList.contains("slide-container") && !parentDiv.classList.contains("card")) {
-          const hasOtherBlocks = parentDiv.querySelector("h1, h2, h3, h4, h5, h6, p, blockquote, li, table");
-          if (!hasOtherBlocks) return parentDiv;
+    // Helper to attach 4 corner resize handles to selected element
+    const attachResizeHandles = (el: HTMLElement) => {
+      removeResizeHandles();
+      if (!el || el === doc.body || el.classList?.contains("slide-container")) return;
+
+      const computedPos = doc.defaultView?.getComputedStyle(el).position;
+      if (computedPos === "static") {
+        el.style.position = "relative";
+      }
+
+      const dirs = ["nw", "ne", "se", "sw"] as const;
+      dirs.forEach((dir) => {
+        const handle = doc.createElement("div");
+        handle.className = `ppt-resize-handle ppt-handle-${dir}`;
+        handle.setAttribute("data-handle-dir", dir);
+        handle.style.position = "absolute";
+        handle.style.width = "10px";
+        handle.style.height = "10px";
+        handle.style.background = "#ffffff";
+        handle.style.border = "2px solid #ea580c";
+        handle.style.borderRadius = "2px";
+        handle.style.zIndex = "999";
+        handle.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+        handle.style.pointerEvents = "auto";
+
+        if (dir === "nw") {
+          handle.style.top = "-5px";
+          handle.style.left = "-5px";
+          handle.style.cursor = "nwse-resize";
+        } else if (dir === "ne") {
+          handle.style.top = "-5px";
+          handle.style.right = "-5px";
+          handle.style.cursor = "nesw-resize";
+        } else if (dir === "se") {
+          handle.style.bottom = "-5px";
+          handle.style.right = "-5px";
+          handle.style.cursor = "nwse-resize";
+        } else if (dir === "sw") {
+          handle.style.bottom = "-5px";
+          handle.style.left = "-5px";
+          handle.style.cursor = "nesw-resize";
         }
-        return target;
-      }
 
-      const blockTextTags = ["H1", "H2", "H3", "H4", "H5", "H6", "P", "BLOCKQUOTE", "LI", "TD", "TH", "PRE", "LABEL", "CAPTION"];
-      if (blockTextTags.includes(target.tagName)) {
-        return target;
-      }
-
-      if (target.tagName === "DIV") {
-        if (target.classList.contains("badge")) return target;
-        const childBlocks = target.querySelector("h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, table, .card");
-        if (childBlocks) {
-          return null;
-        }
-        if (target.textContent && target.textContent.trim().length > 0) {
-          return target;
-        }
-      }
-
-      if (target.textContent && target.textContent.trim().length > 0) {
-        const childBlocks = target.querySelector("h1, h2, h3, h4, h5, h6, p, blockquote, ul, ol, table");
-        if (!childBlocks) return target;
-      }
-
-      return null;
+        el.appendChild(handle);
+      });
     };
 
     let hoveredEl: HTMLElement | null = null;
+    let isDragging = false;
+    let isResizing = false;
+    let resizeDir: string | null = null;
+    let potentialDragEl: HTMLElement | null = null;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+    let initialWidth = 0;
+    let initialHeight = 0;
 
     const handleMouseOver = (e: MouseEvent) => {
-      if (isEditingRef.current) return;
+      if (isEditingRef.current || isDragging || isResizing) return;
       const target = e.target as HTMLElement;
       if (!target || target === doc.body || target === doc.documentElement) return;
+      if (target.classList?.contains("ppt-resize-handle")) return;
+
       if (hoveredEl && hoveredEl !== target) {
         hoveredEl.removeAttribute("data-ppt-hover");
       }
@@ -557,12 +633,34 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
       }
     };
 
-    const handleClick = (e: MouseEvent) => {
+    const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target || target === doc.body || target === doc.documentElement) {
+      if (!target || target === doc.body || target === doc.documentElement) return;
+
+      // 1. Check if clicking on a resize handle
+      if (target.classList.contains("ppt-resize-handle")) {
+        e.stopPropagation();
+        e.preventDefault();
+        isResizing = true;
+        resizeDir = target.getAttribute("data-handle-dir");
+        const parent = target.parentElement as HTMLElement;
+        if (!parent) return;
+
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        initialWidth = parent.offsetWidth;
+        initialHeight = parent.offsetHeight;
+        initialLeft = parent.offsetLeft;
+        initialTop = parent.offsetTop;
+        return;
+      }
+
+      // 2. If clicking on body or slide-container background
+      if (target === doc.body || target.classList.contains("slide-container")) {
         if (activeSelectedRef.current) {
           activeSelectedRef.current.removeAttribute("data-ppt-selected");
           activeSelectedRef.current.removeAttribute("contenteditable");
+          removeResizeHandles();
           activeSelectedRef.current = null;
           isEditingRef.current = false;
           updateSelectionReport(null);
@@ -571,52 +669,180 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
         return;
       }
 
-      e.stopPropagation();
+      // 3. If currently in text editing mode on this element, let standard cursor selection work
+      if (target.getAttribute("contenteditable") === "true") {
+        return;
+      }
 
-      const textEl = resolveTextElement(target);
-      if (textEl) {
-        if (activeSelectedRef.current && activeSelectedRef.current !== textEl) {
+      // 4. Find the top-level selectable element (shape, card, heading, block, etc.)
+      const container = doc.querySelector(".slide-container") || doc.body;
+      let el: HTMLElement = target;
+      while (el.parentElement && el.parentElement !== container && el.parentElement !== doc.body) {
+        if (
+          el.hasAttribute("data-ppt-shape") ||
+          el.classList.contains("card") ||
+          el.classList.contains("badge") ||
+          el.classList.contains("ppt-image-card") ||
+          el.tagName === "TABLE" ||
+          el.tagName === "BLOCKQUOTE"
+        ) {
+          break;
+        }
+        el = el.parentElement as HTMLElement;
+      }
+
+      if (el === container || el === doc.body) return;
+
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const containerRect = container.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      initialLeft = elRect.left - containerRect.left;
+      initialTop = elRect.top - containerRect.top;
+      initialWidth = elRect.width;
+      initialHeight = elRect.height;
+
+      potentialDragEl = el;
+      isDragging = false;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Precise coordinate calculation within the 1280x720 slide bounds
+      const docW = doc.documentElement.clientWidth || SLIDE_WIDTH;
+      const docH = doc.documentElement.clientHeight || SLIDE_HEIGHT;
+      const slideX = Math.round(Math.max(0, Math.min(SLIDE_WIDTH, (e.clientX / docW) * SLIDE_WIDTH)));
+      const slideY = Math.round(Math.max(0, Math.min(SLIDE_HEIGHT, (e.clientY / docH) * SLIDE_HEIGHT)));
+
+      emitCursor(slideX, slideY);
+
+      // Handle Resizing
+      if (isResizing && activeSelectedRef.current && resizeDir) {
+        const el = activeSelectedRef.current;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        const isCircle = el.getAttribute("data-ppt-shape") === "circle" || el.style.borderRadius === "9999px";
+
+        if (resizeDir === "se") {
+          let nw = Math.max(30, initialWidth + dx);
+          let nh = Math.max(30, initialHeight + dy);
+          if (isCircle) {
+            const sz = Math.max(nw, nh);
+            nw = sz;
+            nh = sz;
+          }
+          el.style.width = `${nw}px`;
+          el.style.height = `${nh}px`;
+        } else if (resizeDir === "sw") {
+          let nw = Math.max(30, initialWidth - dx);
+          let nh = Math.max(30, initialHeight + dy);
+          if (isCircle) {
+            const sz = Math.max(nw, nh);
+            nw = sz;
+            nh = sz;
+          }
+          el.style.width = `${nw}px`;
+          el.style.height = `${nh}px`;
+          el.style.left = `${initialLeft + (initialWidth - nw)}px`;
+        } else if (resizeDir === "ne") {
+          let nw = Math.max(30, initialWidth + dx);
+          let nh = Math.max(30, initialHeight - dy);
+          if (isCircle) {
+            const sz = Math.max(nw, nh);
+            nw = sz;
+            nh = sz;
+          }
+          el.style.width = `${nw}px`;
+          el.style.height = `${nh}px`;
+          el.style.top = `${initialTop + (initialHeight - nh)}px`;
+        } else if (resizeDir === "nw") {
+          let nw = Math.max(30, initialWidth - dx);
+          let nh = Math.max(30, initialHeight - dy);
+          if (isCircle) {
+            const sz = Math.max(nw, nh);
+            nw = sz;
+            nh = sz;
+          }
+          el.style.width = `${nw}px`;
+          el.style.height = `${nh}px`;
+          el.style.left = `${initialLeft + (initialWidth - nw)}px`;
+          el.style.top = `${initialTop + (initialHeight - nh)}px`;
+        }
+        return;
+      }
+
+      // Handle Dragging
+      if (potentialDragEl) {
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+
+        if (!isDragging && Math.hypot(dx, dy) > 4) {
+          isDragging = true;
+          removeResizeHandles();
+        }
+
+        if (isDragging) {
+          potentialDragEl.style.position = "absolute";
+          potentialDragEl.style.left = `${Math.round(initialLeft + dx)}px`;
+          potentialDragEl.style.top = `${Math.round(initialTop + dy)}px`;
+          potentialDragEl.style.width = `${Math.round(initialWidth)}px`;
+          potentialDragEl.style.margin = "0";
+          potentialDragEl.style.zIndex = "25";
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (isResizing) {
+        isResizing = false;
+        resizeDir = null;
+        commitHtmlChange(true);
+        return;
+      }
+
+      if (isDragging && potentialDragEl) {
+        isDragging = false;
+        if (activeSelectedRef.current && activeSelectedRef.current !== potentialDragEl) {
           activeSelectedRef.current.removeAttribute("data-ppt-selected");
           activeSelectedRef.current.removeAttribute("contenteditable");
         }
-        activeSelectedRef.current = textEl;
-        textEl.removeAttribute("data-ppt-hover");
-        textEl.setAttribute("data-ppt-selected", "true");
-        textEl.setAttribute("contenteditable", "true");
-        isEditingRef.current = true;
-        textEl.focus();
-        updateSelectionReport(textEl);
-      } else {
-        if (activeSelectedRef.current && activeSelectedRef.current !== target) {
+        activeSelectedRef.current = potentialDragEl;
+        potentialDragEl.setAttribute("data-ppt-selected", "true");
+        attachResizeHandles(potentialDragEl);
+        updateSelectionReport(potentialDragEl);
+        potentialDragEl = null;
+        commitHtmlChange(true);
+        return;
+      }
+
+      if (potentialDragEl) {
+        // It was a click (not dragged)
+        if (activeSelectedRef.current && activeSelectedRef.current !== potentialDragEl) {
           activeSelectedRef.current.removeAttribute("data-ppt-selected");
           activeSelectedRef.current.removeAttribute("contenteditable");
+          removeResizeHandles();
         }
-        activeSelectedRef.current = target;
-        target.removeAttribute("data-ppt-hover");
-        target.setAttribute("data-ppt-selected", "true");
-        isEditingRef.current = false;
-        updateSelectionReport(target);
+        activeSelectedRef.current = potentialDragEl;
+        potentialDragEl.setAttribute("data-ppt-selected", "true");
+        attachResizeHandles(potentialDragEl);
+        updateSelectionReport(potentialDragEl);
+        potentialDragEl = null;
       }
     };
 
     const handleDblClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (!target || target === doc.body || target === doc.documentElement) return;
+      if (target.classList.contains("ppt-resize-handle")) return;
       e.stopPropagation();
 
-      const textEl = resolveTextElement(target);
-      if (textEl) {
-        if (activeSelectedRef.current && activeSelectedRef.current !== textEl) {
-          activeSelectedRef.current.removeAttribute("data-ppt-selected");
-          activeSelectedRef.current.removeAttribute("contenteditable");
-        }
-        activeSelectedRef.current = textEl;
-        textEl.setAttribute("data-ppt-selected", "true");
-        textEl.setAttribute("contenteditable", "true");
-        isEditingRef.current = true;
-        textEl.focus();
-        updateSelectionReport(textEl);
-      }
+      const el = activeSelectedRef.current || target;
+      if (!el || el === doc.body || el.classList.contains("slide-container")) return;
+
+      el.setAttribute("data-ppt-selected", "true");
+      el.setAttribute("contenteditable", "true");
+      isEditingRef.current = true;
+      el.focus();
+      updateSelectionReport(el);
     };
 
     const handleInput = () => {
@@ -648,9 +874,42 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
 
       if (!isContentEditable && (e.key === "Delete" || e.key === "Backspace")) {
         e.preventDefault();
+        removeResizeHandles();
         el.remove();
         activeSelectedRef.current = null;
         updateSelectionReport(null);
+        commitHtmlChange(true);
+        return;
+      }
+
+      if (!isContentEditable && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        removeResizeHandles();
+        const clone = el.cloneNode(true) as HTMLElement;
+        clone.removeAttribute("data-ppt-selected");
+        clone.removeAttribute("data-ppt-hover");
+        clone.removeAttribute("contenteditable");
+        clone.querySelectorAll(".ppt-resize-handle").forEach((h) => h.remove());
+
+        const currentTop = parseInt(el.style.top || "0", 10);
+        const currentLeft = parseInt(el.style.left || "0", 10);
+        clone.style.top = `${currentTop + 24}px`;
+        clone.style.left = `${currentLeft + 24}px`;
+
+        el.parentElement?.appendChild(clone);
+        commitHtmlChange(true);
+        return;
+      }
+
+      if (!isContentEditable && (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        e.preventDefault();
+        const step = e.shiftKey ? 10 : 1;
+        const currentTop = parseInt(el.style.top || "0", 10);
+        const currentLeft = parseInt(el.style.left || "0", 10);
+        if (e.key === "ArrowUp") el.style.top = `${currentTop - step}px`;
+        else if (e.key === "ArrowDown") el.style.top = `${currentTop + step}px`;
+        else if (e.key === "ArrowLeft") el.style.left = `${currentLeft - step}px`;
+        else if (e.key === "ArrowRight") el.style.left = `${currentLeft + step}px`;
         commitHtmlChange(true);
         return;
       }
@@ -676,86 +935,12 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
       }
     };
 
-    // Drag-to-move support
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let initialLeft = 0;
-    let initialTop = 0;
-
-    const handleMouseDown = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target || target === doc.body || target === doc.documentElement) return;
-
-      const textEl = resolveTextElement(target);
-      if (textEl) {
-        if (activeSelectedRef.current && activeSelectedRef.current !== textEl) {
-          activeSelectedRef.current.removeAttribute("data-ppt-selected");
-          activeSelectedRef.current.removeAttribute("contenteditable");
-        }
-        activeSelectedRef.current = textEl;
-        textEl.setAttribute("data-ppt-selected", "true");
-        textEl.setAttribute("contenteditable", "true");
-        isEditingRef.current = true;
-        updateSelectionReport(textEl);
-        isDragging = false;
-        return;
-      }
-
-      if (activeSelectedRef.current && activeSelectedRef.current !== target) {
-        activeSelectedRef.current.removeAttribute("data-ppt-selected");
-        activeSelectedRef.current.removeAttribute("contenteditable");
-      }
-      activeSelectedRef.current = target;
-      target.setAttribute("data-ppt-selected", "true");
-      isEditingRef.current = false;
-      updateSelectionReport(target);
-
-      if (target !== doc.body && !target.classList.contains("slide-container")) {
-        isDragging = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-
-        const rect = target.getBoundingClientRect();
-        const parentRect = (target.offsetParent as HTMLElement)?.getBoundingClientRect() || rect;
-        initialLeft = rect.left - parentRect.left;
-        initialTop = rect.top - parentRect.top;
-
-        target.style.position = "relative";
-      }
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      // Precise coordinate calculation within the 1280x720 slide bounds
-      const docW = doc.documentElement.clientWidth || SLIDE_WIDTH;
-      const docH = doc.documentElement.clientHeight || SLIDE_HEIGHT;
-      const slideX = Math.round(Math.max(0, Math.min(SLIDE_WIDTH, (e.clientX / docW) * SLIDE_WIDTH)));
-      const slideY = Math.round(Math.max(0, Math.min(SLIDE_HEIGHT, (e.clientY / docH) * SLIDE_HEIGHT)));
-
-      emitCursor(slideX, slideY);
-
-      if (!isDragging || !activeSelectedRef.current) return;
-      const dx = e.clientX - dragStartX;
-      const dy = e.clientY - dragStartY;
-
-      activeSelectedRef.current.style.left = `${initialLeft + dx}px`;
-      activeSelectedRef.current.style.top = `${initialTop + dy}px`;
-    };
-
     const handleMouseLeave = () => {
       clearCursor();
     };
 
-    const handleMouseUp = () => {
-      if (isDragging) {
-        isDragging = false;
-        commitHtmlChange(true);
-      }
-    };
-
     doc.addEventListener("mouseover", handleMouseOver);
     doc.addEventListener("mouseout", handleMouseOut);
-    doc.addEventListener("click", handleClick);
     doc.addEventListener("dblclick", handleDblClick);
     doc.addEventListener("input", handleInput);
     doc.addEventListener("blur", handleBlur, true);
@@ -769,7 +954,6 @@ export const SlideIframe = forwardRef<SlideIframeHandle, SlideIframeProps>(({
     return () => {
       doc.removeEventListener("mouseover", handleMouseOver);
       doc.removeEventListener("mouseout", handleMouseOut);
-      doc.removeEventListener("click", handleClick);
       doc.removeEventListener("dblclick", handleDblClick);
       doc.removeEventListener("input", handleInput);
       doc.removeEventListener("blur", handleBlur, true);

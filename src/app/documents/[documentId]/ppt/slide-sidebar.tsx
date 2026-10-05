@@ -30,6 +30,14 @@ interface SlideSidebarProps {
   onMoveSlide: (index: number, direction: "up" | "down") => void;
 }
 
+const formatThumbnailHtml = (html: string) => {
+  const resetStyle = `<style>.slide-container { animation: none !important; transition: none !important; } .ppt-resize-handle { display: none !important; } [data-ppt-selected] { outline: none !important; box-shadow: none !important; } [data-ppt-hover] { outline: none !important; }</style>`;
+  if (html.includes("</head>")) {
+    return html.replace("</head>", `${resetStyle}</head>`);
+  }
+  return html + resetStyle;
+};
+
 export const SlideSidebar: React.FC<SlideSidebarProps> = ({
   slides,
   activeSlideId,
@@ -88,7 +96,7 @@ export const SlideSidebar: React.FC<SlideSidebarProps> = ({
               >
                 {/* Mini Sandboxed Preview */}
                 <iframe
-                  srcDoc={slide.html}
+                  srcDoc={formatThumbnailHtml(slide.html)}
                   title={`Thumbnail ${index + 1}`}
                   className="pointer-events-none w-[1280px] h-[720px] origin-top-left border-0"
                   style={{

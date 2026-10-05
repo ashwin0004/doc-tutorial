@@ -188,6 +188,21 @@ export const SlideshowPresenter: React.FC<SlideshowPresenterProps> = ({
   // Enriched slide HTML with guaranteed transition keyframes and slide-container animations
   const injectedSlideHtml = useMemo(() => {
     if (!currentSlide?.html) return "";
+
+    let cleanHtml = currentSlide.html;
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(cleanHtml, "text/html");
+      doc.querySelectorAll(".ppt-resize-handle").forEach((el) => el.remove());
+      doc.querySelectorAll("[data-ppt-hover]").forEach((el) => el.removeAttribute("data-ppt-hover"));
+      doc.querySelectorAll("[data-ppt-selected]").forEach((el) => el.removeAttribute("data-ppt-selected"));
+      doc.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
+      doc.querySelectorAll("#editor-interactive-styles").forEach((el) => el.remove());
+      cleanHtml = "<!doctype html>\n" + doc.documentElement.outerHTML;
+    } catch {
+      // fallback
+    }
+
     const anim = currentSlide.animation || "fade";
     const dur = currentSlide.animationDuration || "0.5s";
     const animCss = getAnimationCss(anim, dur).replace(";", " !important;");
@@ -210,10 +225,10 @@ export const SlideshowPresenter: React.FC<SlideshowPresenterProps> = ({
       </style>
     `;
 
-    if (currentSlide.html.includes("</head>")) {
-      return currentSlide.html.replace("</head>", `${animStyleTag}</head>`);
+    if (cleanHtml.includes("</head>")) {
+      return cleanHtml.replace("</head>", `${animStyleTag}</head>`);
     }
-    return currentSlide.html + animStyleTag;
+    return cleanHtml + animStyleTag;
   }, [currentSlide]);
 
   if (!isOpen || !currentSlide) return null;

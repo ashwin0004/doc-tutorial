@@ -59,13 +59,13 @@ import { api } from "../../../../convex/_generated/api";
 
 interface NavbarProps {
     data: Doc<"documents">;
-    activeView?: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation";
-    setActiveView?: (view: "document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation") => void;
+    activeView?: "document" | "whiteboard" | "flowchart" | "spreadsheet" | "presentation";
+    setActiveView?: (view: "document" | "whiteboard" | "flowchart" | "spreadsheet" | "presentation") => void;
 };
 
 export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
     const router = useRouter();
-    const { editor } = useEditorStore();
+    const { editor, isTodoOpen, toggleTodoOpen } = useEditorStore();
     const mutation = useMutation(api.documents.create);
 
     const todos = useStorage((root) => root.todos);
@@ -134,12 +134,6 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
                 return;
             }
             content = editor.getText();
-        } else if (activeView === "todo") {
-            if (!todos) return;
-            content = "TO-DO LIST\n==========\n\n";
-            todos.forEach((todo) => {
-                content += `[${todo.checked ? "x" : " "}] ${todo.text}\n`;
-            });
         } else if (activeView === "spreadsheet") {
             if (!spreadsheet) return;
             spreadsheet.forEach((row) => {
@@ -358,6 +352,23 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
             <div className="flex gap-3 items-center pl-6">
                 <Avatars />
                 <Inbox />
+                <Button
+                    variant={isTodoOpen ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => toggleTodoOpen()}
+                    className={`relative h-8 px-2 text-xs font-medium gap-1.5 ${
+                        isTodoOpen ? "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300" : ""
+                    }`}
+                    title="Collaborative Tasks / To-Do List"
+                >
+                    <CheckSquareIcon className="size-4 text-blue-600" />
+                    <span className="hidden sm:inline">Tasks</span>
+                    {todos && todos.filter((t) => !t.checked).length > 0 && (
+                        <span className="size-4 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+                            {todos.filter((t) => !t.checked).length}
+                        </span>
+                    )}
+                </Button>
                 <OrganizationSwitcher
                     afterCreateOrganizationUrl="/"
                     afterLeaveOrganizationUrl="/"
@@ -385,15 +396,6 @@ export const Navbar = ({ data, activeView, setActiveView }: NavbarProps) => {
                                 >
                                     <Presentation className="size-4 mr-2" />
                                     Board
-                                </Button>
-                                <Button
-                                    variant={activeView === "todo" ? "secondary" : "ghost"}
-                                    size="sm"
-                                    onClick={() => setActiveView?.("todo")}
-                                    className={activeView === "todo" ? "bg-white shadow-sm" : ""}
-                                >
-                                    <CheckSquareIcon className="size-4 mr-2" />
-                                    Todo
                                 </Button>
                                 <Button
                                     variant={activeView === "flowchart" ? "secondary" : "ghost"}

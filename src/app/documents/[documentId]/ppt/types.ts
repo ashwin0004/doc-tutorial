@@ -72,3 +72,20 @@ export interface ChatMessage {
 }
 
 export type RibbonTab = "home" | "insert" | "design" | "present" | "ai";
+
+export type InsertElementType =
+  | "textbox"
+  | "card"
+  | "stats"
+  | "quote"
+  | "rect"
+  | "rounded-rect"
+  | "circle"
+  | "diamond"
+  | "triangle"
+  | "arrow"
+  | "star"
+  | "image"
+  | "table"
+  | "continuation";
+

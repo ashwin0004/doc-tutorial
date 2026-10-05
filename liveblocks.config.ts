@@ -9,6 +9,7 @@ declare global {
     Presence: {
       cursor: { x: number; y: number } | null;
       slideCursor?: { x: number; y: number; slideId: string } | null;
+      isTypingTodo?: boolean;
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.

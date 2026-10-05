@@ -119,9 +119,9 @@ export const ImageImportModal: React.FC<ImageImportModalProps> = ({
       : "";
 
     const snippet = `
-      <div class="ppt-image-card" style="position: relative; max-width: ${maxWidth}; margin: 16px auto; width: 100%;">
+      <div class="ppt-image-card" data-ppt-shape="image" style="position: absolute; left: 390px; top: 180px; width: ${maxWidth}; max-width: 90%; cursor: move; z-index: 15; box-sizing: border-box;">
         <div style="border-radius: 14px; overflow: hidden; box-shadow: 0 14px 35px rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.2);">
-          <img src="${selectedImageSrc}" alt="${imageCaption || "Slide visual"}" style="width: 100%; height: auto; display: block; object-fit: cover;" />
+          <img src="${selectedImageSrc}" alt="${imageCaption || "Slide visual"}" style="width: 100%; height: auto; display: block; object-fit: cover; pointer-events: none;" />
         </div>
         ${captionHtml}
       </div>

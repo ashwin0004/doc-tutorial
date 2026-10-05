@@ -8,7 +8,7 @@ import { Navbar } from "./navbar";
 import { Room } from "./room";
 import { Toolbar } from "./toolbar";
 import { Whiteboard } from "./whiteboard";
-import { TodoList } from "./todo-list";
+import { TodoPopup } from "./todo-list";
 import { api } from "../../../../convex/_generated/api";
 import dynamic from "next/dynamic";
 
@@ -27,7 +27,7 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
     : document.type === "spreadsheet"
     ? "spreadsheet"
     : "document";
-  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "todo" | "flowchart" | "spreadsheet" | "presentation">(initialView);
+  const [activeView, setActiveView] = useState<"document" | "whiteboard" | "flowchart" | "spreadsheet" | "presentation">(initialView);
 
   return (
     <Room>
@@ -41,15 +41,11 @@ export const Document = ({ preloadedDocument }: DocumentProps) => {
         <div className={activeView === "presentation" ? "pt-[56px]" : "pt-[114px] print:pt-0"}>
           <div className={activeView === "document" ? "block" : "hidden"}>
             <Editor initialContent={document.initialContent} />
+            <TodoPopup />
           </div>
           {activeView === "whiteboard" && (
             <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
               <Whiteboard />
-            </div>
-          )}
-          {activeView === "todo" && (
-            <div className="fixed top-[114px] left-0 right-0 bottom-0 z-0 h-[calc(100vh-114px)]">
-              <TodoList />
             </div>
           )}
           {activeView === "flowchart" && (
